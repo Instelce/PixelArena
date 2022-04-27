@@ -1,15 +1,14 @@
-from tkinter import Toplevel
-import py
 import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, pos, groups) -> None:
+        super().__init__(groups)
         self.display_surface = pygame.display.get_surface()
+        self.pos = pos
 
         self.image = pygame.Surface((16, 32))
-        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.rect = self.image.get_rect(topleft=pos)
         self.image.fill('purple')
 
         self.direction = pygame.math.Vector2(0, 0)
@@ -26,12 +25,9 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = -1
         elif keys[pygame.K_SPACE] and self.on_ground:
             self.jump(self.jump_speed)
-        elif keys[pygame.K_RIGHT] and keys[pygame.K_SPACE] and self.on_ground:
-            self.jump(self.jump_speed)
-            self.direction.x = 1
 
-    def jump(self):
-        pass
+    def jump(self, strenght):
+        self.direction.y = strenght
 
     def update(self):
-        pass        
+        self.get_input()
