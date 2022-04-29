@@ -13,13 +13,15 @@ class Level:
         self.display_surface = pygame.display.get_surface()
 
         self.visible_sprites = YSortCameraGroup()
+        # self.visible_sprites = pygame.sprite.Group()
         self.obstacle_sprites = pygame.sprite.Group()
 
         self.create_map()
 
     def create_map(self):
         layouts = {
-            'terrain': import_csv_layout('map/map_1.csv'),
+            'terrain': import_csv_layout('map/map_1_terrain.csv'),
+            'player': import_csv_layout('map/map_1_player.csv'),
         }
         graphics = {
             'block': import_folder('../graphics/block.png'),
@@ -36,12 +38,13 @@ class Level:
                         if style == 'terrain':
                             surf = graphics['block']
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
-
-        self.player = Player((0,0),[self.visible_sprites],self.obstacle_sprites)
+                        if style == 'player':
+                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
 
     def run(self):
         # Update and draw the game
         self.visible_sprites.custom_draw(self.player)
+        # self.visible_sprites.draw(self.display_surface)
         self.visible_sprites.update()
         debug(self.player.direction)
 
@@ -59,7 +62,7 @@ class YSortCameraGroup(pygame.sprite.Group):
     def custom_draw(self, player):
         # Getting the offset
         self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_width
+        self.offset.y = player.rect.centery - self.half_height
 
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset

@@ -7,9 +7,9 @@ class Player(pygame.sprite.Sprite):
         self.display_surface = pygame.display.get_surface()
         self.pos = pos
 
-        self.image = pygame.Surface((16, 32))
+        self.image = pygame.Surface((32, 64))
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(0, -26)
+        # self.hitbox = self.rect.inflate(0, 0)
         self.image.fill('purple')
 
         self.direction = pygame.math.Vector2(0, 0)
@@ -22,40 +22,43 @@ class Player(pygame.sprite.Sprite):
     def get_input(self):
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.direction.x = 1
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_q]:
             self.direction.x = -1
-        elif keys[pygame.K_SPACE]:
+        else:
+            self.direction.x = 0
+
+        if keys[pygame.K_SPACE] or keys[pygame.K_z]:
             self.jump(self.jump_speed)
 
     def collision(self, direction):
         if direction == 'horizontal':
             for sprite in self.obstacle_sprites:
-                if sprite.hitbox.colliderect(self.hitbox):
+                if sprite.rect.colliderect(self.rect):
                     if self.direction.x > 0:
-                        self.hitbox.right = sprite.hitbox.left
+                        self.rect.right = sprite.rect.left
                     if self.direction.x < 0:
-                        self.hitbox.left = sprite.hitbox.right
+                        self.rect.left = sprite.rect.right
         
         if direction == 'vertical':
+            self.apply_gravity()
+
             for sprite in self.obstacle_sprites:
-                if self.direction.y > 0:
-                    self.hitbox.bottom = sprite.hitbox.top
-                if self.direction.y < 0:
-                    self.hitbox.top = sprite.hitbox.bottom
+                if sprite.rect.colliderect(self.rect):
+                    if self.direction.y > 0:
+                        self.rect.bottom = sprite.rect.top
+                    if self.direction.y < 0:
+                        self.rect.top = sprite.rect.bottom
 
     def move(self, speed):
-        self.apply_gravity()
-
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
 
-        self.hitbox.x += self.direction.x * speed
+        self.rect.x += self.direction.x * speed 
         self.collision('horizontal')
-        self.hitbox.y += self.direction.y * speed
+        self.rect.y += self.direction.y * speed
         self.collision('vertical')
-        self.rect.topleft = self.hitbox.topleft
         
     def apply_gravity(self):
         self.direction.y += self.gravity
