@@ -1,5 +1,10 @@
 import pygame
 
+from tile import Tile
+from support import *
+from settings import *
+from debug import debug
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, obstacle_sprites) -> None:
@@ -9,17 +14,40 @@ class Player(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((32, 64))
         self.rect = self.image.get_rect(topleft=pos)
-        # self.hitbox = self.rect.inflate(0, 0)
+        self.hitbox = self.rect.inflate(0, 20)
         self.image.fill('purple')
 
+        # Movements
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 8
+        self.speed = 10
         self.gravity = 0.8
-        self.jump_speed = -20
+        self.jump_speed = -16
+
+        # Player status
+        self.current_x = 0
+        self.on_ground = False
+        self.on_ceiling = False
+        self.on_left = False
+        self.on_right = False
 
         self.obstacle_sprites = obstacle_sprites
 
-    def get_input(self):
+    def animate(self):
+        # Set the rect
+        if self.on_ground and self.on_right:
+            self.rect = self.image.get_rect(bottomright=self.rect.bottomright)
+        elif self.on_ground and self.on_left:
+            self.rect = self.image.get_rect(bottomleft=self.rect.bottomleft)
+        elif self.on_ground:
+            self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
+        if self.on_ceiling and self.on_right:
+            self.rect = self.image.get_rect(topright=self.rect.topright)
+        elif self.on_ceiling and self.on_left:
+            self.rect = self.image.get_rect(topleft=self.rect.topleft)
+        elif self.on_ceiling:
+            self.rect = self.image.get_rect(midtop=self.rect.midtop)
+
+    def input(self):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -29,44 +57,64 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-        if keys[pygame.K_SPACE] or keys[pygame.K_z]:
-            self.jump(self.jump_speed)
+        if keys[pygame.K_SPACE] and self.on_ground:
+            self.jump()
+
+    def move(self, speed):
+        if self.direction.magnitude() != 0:
+            self.direction = self.direction.normalize()
+            
+        self.rect.x += self.direction.x * speed
+        self.collision('horizontal')
+        self.rect.y += self.direction.y * speed
+        self.apply_gravity()
+        self.collision('vertical')
 
     def collision(self, direction):
         if direction == 'horizontal':
             for sprite in self.obstacle_sprites:
                 if sprite.rect.colliderect(self.rect):
-                    if self.direction.x > 0:
+                    if self.direction.x > 0: # Right
                         self.rect.right = sprite.rect.left
-                    if self.direction.x < 0:
+                        self.on_right = True
+                        self.current_x = self.rect.right
+                    if self.direction.x < 0: # Left
                         self.rect.left = sprite.rect.right
-        
-        if direction == 'vertical':
-            self.apply_gravity()
+                        self.on_left = True
+                        self.current_x = self.rect.left
+            
+            # Reset on_right and on_left
+            if self.on_right and (self.rect.right < self.current_x or self.direction.x <= 0):
+                self.on_right = False
+            elif self.on_left and (self.rect.left < self.current_x or self.direction.x >= 0):
+                self.on_left = False
 
+        if direction == 'vertical':
             for sprite in self.obstacle_sprites:
                 if sprite.rect.colliderect(self.rect):
-                    if self.direction.y > 0:
+                    if self.direction.y > 0: # Down
                         self.rect.bottom = sprite.rect.top
-                    if self.direction.y < 0:
+                        self.direction.y = 0
+                        self.on_ground = True
+                    if self.direction.y < 0: # Up
                         self.rect.top = sprite.rect.bottom
+                        self.direction.y = 0
+                        self.on_ceiling = True
 
-    def move(self, speed):
-        if self.direction.magnitude() != 0:
-            self.direction = self.direction.normalize()
+            # Reset on_ground and on_ceiling
+            if self.on_ground and self.direction.y < 0 or self.direction.y > 1:
+                self.on_ground = False
+            elif self.on_ceiling and self.direction.y > 0:
+                self.on_ceiling = False
 
-        self.rect.x += self.direction.x * speed 
-        self.collision('horizontal')
-        self.rect.y += self.direction.y * speed
-        self.collision('vertical')
-        
     def apply_gravity(self):
         self.direction.y += self.gravity
         self.rect.y += self.direction.y
 
-    def jump(self, strenght):
-        self.direction.y = strenght
+    def jump(self):
+        self.direction.y = self.jump_speed
 
     def update(self):
-        self.get_input()
+        self.input()
+        self.animate()
         self.move(self.speed)

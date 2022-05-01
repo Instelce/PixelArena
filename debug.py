@@ -1,7 +1,7 @@
 import pygame
 pygame.init()
 
-font = pygame.font.Font(None,30)
+font = pygame.font.Font(None,15)
 
 
 def debug(info,y = 10, x = 10):

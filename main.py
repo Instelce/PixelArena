@@ -21,7 +21,7 @@ class Game:
                     pygame.quit() 
                     sys.exit()
 
-            self.screen.fill('black')
+            self.screen.fill((12, 12, 12))
             self.level.run()
             
             pygame.display.update()
