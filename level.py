@@ -6,6 +6,7 @@ from debug import debug
 from tile import Tile
 from support import *
 from mouse import Mouse
+from enemy import Enemy
 
 
 class Level:
@@ -41,6 +42,7 @@ class Level:
         layouts = {
             'terrain': import_csv_layout('map/map_1_terrain.csv'),
             'player': import_csv_layout('map/map_1_player.csv'),
+            'enemy': import_csv_layout('map/map_1_enemy.csv'),
         }
         graphics = {
             'terrain': import_cut_graphics('graphics/terrain.png'),
@@ -59,10 +61,13 @@ class Level:
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'player':
                             self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
+                        if style == 'enemy':
+                            Enemy((x, y), [self.visible_sprites], self.obstacle_sprites, self.player)
 
     def build(self):
+        now = pygame.time.get_ticks()
         mouse_pos = pygame.mouse.get_pos()
-        build_cursor_border = 4
+        build_cursor_border = 2
 
         # Preview
         build_preview = pygame.image.load('graphics/player/build/block.png')
@@ -77,15 +82,21 @@ class Level:
                 pygame.draw.rect(self.display_surface, "red", tile, build_cursor_border)      
                 self.grid_tile_selected = tile              
                 
-                if tile.colliderect(self.build_range_rect) and not tile.colliderect(self.player.rect) and tile.collidelist(self.obstacle_sprites.sprites()):
+                if tile.colliderect(self.build_range_rect) and not tile.colliderect(self.player.rect):
                     # Can build
                     self.display_surface.blit(build_preview, (tile.x, tile.y))
                     pygame.draw.rect(self.display_surface, "white", tile, build_cursor_border)
+
                     offset_pos = self.visible_sprites.get_offset_pos(self.player, (self.grid_tile_selected.x, self.grid_tile_selected.y), sign='+')
-                    if pygame.mouse.get_pressed()[0] and self.can_build:
+
+                    # Place block
+                    if pygame.mouse.get_pressed()[0] and self.can_build and now - self.last_time >= 100:
                         print(f"BUILD A BLOCK : {offset_pos}")
+                        self.last_time = now
                         
                         Tile(offset_pos, [self.visible_sprites, self.obstacle_sprites], self.build_block)
+                    
+                    # Destroy block
                     if pygame.mouse.get_pressed()[2]:
                         print(f"DESTROY A BLOCK : {offset_pos}")
                         
