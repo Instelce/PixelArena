@@ -1,5 +1,7 @@
 import pygame
 
+from settings import TILE_SIZE
+
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, obstacle_sprites) -> None:
@@ -14,7 +16,7 @@ class Entity(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 10
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_size = 4 * TILE_SIZE # vel_y
 
         # Player status
         self.current_x = 0
@@ -92,7 +94,15 @@ class Entity(pygame.sprite.Sprite):
         self.rect.y += self.direction.y
 
     def jump(self):
-        self.direction.y = self.jump_speed
+        # self.direction.y = self.jump_speed
+        # self.rect.y -= self.direction.y
+        # print(self.jump_speed)
+
+        self.rect.y -= vel_y*4
+        self.jump_size -= TILE_SIZE
+        if self.jump_size < self.rect.bottom:
+            jump = False
+            vel_y = 10
 
     def update(self):
         self.animate()

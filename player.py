@@ -25,6 +25,7 @@ class Player(Entity):
             self.direction.x = 0
 
         if keys[pygame.K_SPACE] and self.on_ground:
+            print("PLAYER JUMP")
             self.jump()
 
     def update(self):
