@@ -6,3 +6,7 @@ WORLD_TILE_COUNT_HEIGHT = 50
 WORLD_WIDTH = WORLD_TILE_COUNT_WIDTH * TILE_SIZE
 WORLD_HEIGHT = WORLD_TILE_COUNT_HEIGHT * TILE_SIZE
 FPS = 60
+
+weapon_data = {
+    'sword': {'cooldown': 100, 'damage': 15, 'graphic': 'graphics\weapons\sword.png'}
+}

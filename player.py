@@ -8,11 +8,18 @@ from entity import Entity
 
 
 class Player(Entity):
-    def __init__(self, pos, groups, obstacle_sprites) -> None:
+    def __init__(self, pos, groups, obstacle_sprites, create_attack) -> None:
         super().__init__(pos, groups, obstacle_sprites)
         self.image.fill('purple')
 
+
+        # Movements
         self.speed = 10
+        self.jump_size = -20
+        self.attacking = False
+        self.attack_cooldown = 400
+        self.attack_time = None
+        self.create_attack = create_attack
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -26,7 +33,9 @@ class Player(Entity):
 
         if keys[pygame.K_SPACE] and self.on_ground:
             print("PLAYER JUMP")
-            self.jump()
+            self.jump(self.jump_size)
+
+    # def 
 
     def update(self):
         self.input()
