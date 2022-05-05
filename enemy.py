@@ -22,7 +22,7 @@ class Enemy(Entity):
     
     def track_player(self):
         self.player_vector = self.get_direction(self.rect.x, self.player.rect.x)
-        self.direction.x = self.player_vector.x
+        self.direction = self.player_vector
 
     def update(self):
         self.track_player()

@@ -12,20 +12,40 @@ class Player(Entity):
         super().__init__(pos, groups, obstacle_sprites)
         self.image.fill('purple')
 
-        self.speed = 10
+        self.speed = 5
+
+        self.last_time = pygame.time.get_ticks()
 
     def input(self):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.direction.x = 1
+            self.accelerate()
         elif keys[pygame.K_LEFT] or keys[pygame.K_q]:
             self.direction.x = -1
+            self.accelerate()
         else:
+            self.speed = 5
             self.direction.x = 0
 
-        if keys[pygame.K_SPACE] and self.on_ground:
-            self.jump()
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            self.direction.y = 1
+            self.accelerate()
+        elif keys[pygame.K_UP] or keys[pygame.K_z]:
+            self.direction.y = -1
+            self.accelerate()
+        else:
+            self.speed = 5
+            self.direction.y = 0
+
+    def accelerate(self):
+        now = pygame.time.get_ticks()
+
+        if now - self.last_time >= 150 and self.speed < 10:
+            self.last_time = now
+            self.speed += 1
+            print(self.speed)
 
     def update(self):
         self.input()

@@ -61,8 +61,8 @@ class Level:
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'player':
                             self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
-                        if style == 'enemy':
-                            Enemy((x, y), [self.visible_sprites], self.obstacle_sprites, self.player)
+                        # if style == 'enemy':
+                        #     Enemy((x, y), [self.visible_sprites], self.obstacle_sprites, self.player)
 
     def build(self):
         now = pygame.time.get_ticks()
@@ -129,8 +129,9 @@ class Level:
         # Debug
         debug(pygame.mouse.get_pos())
         debug(self.player.direction, 20)
-        debug(f"on_ground : {self.player.on_ground}", 30)
+        debug(f"on_ground : {self.player.on_bottom}", 30)
         debug(self.player.rect.topleft, 40)
+        debug(self.player.speed, 50)
         # debug(f"selected tile pos : {self.grid_tile_selected.x}, {self.grid_tile_selected.y}", 50)
         debug(f"in_build_mode : {self.in_build_mode}", 60)
 
