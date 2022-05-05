@@ -65,18 +65,12 @@ class Level:
                             surf = graphics['terrain'][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'player':
-<<<<<<< HEAD
-                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
-                        # if style == 'enemy':
-                        #     Enemy((x, y), [self.visible_sprites], self.obstacle_sprites, self.player)
-=======
                             self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites, self.create_attack)
-                        if style == 'enemy':
-                            Enemy((x, y), [self.visible_sprites, self.enemies_sprite], self.obstacle_sprites, self.player)
+                        # if style == 'enemy':
+                        #     Enemy((x, y), [self.visible_sprites, self.enemies_sprite], self.obstacle_sprites, self.player)
                         if style == 'objects':
                             surf = pygame.image.load("graphics/objects/relique.png").convert_alpha()
                             Object((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
->>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
 
     # BUILD
     def build(self):

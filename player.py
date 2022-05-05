@@ -12,11 +12,9 @@ class Player(Entity):
         super().__init__(pos, groups, obstacle_sprites)
         self.image.fill('purple')
 
-<<<<<<< HEAD
         self.speed = 5
 
         self.last_time = pygame.time.get_ticks()
-=======
 
         # Movements
         self.speed = 10
@@ -25,7 +23,6 @@ class Player(Entity):
         self.attack_cooldown = 400
         self.attack_time = None
         self.create_attack = create_attack
->>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -40,7 +37,6 @@ class Player(Entity):
             self.speed = 5
             self.direction.x = 0
 
-<<<<<<< HEAD
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.direction.y = 1
             self.accelerate()
@@ -58,13 +54,6 @@ class Player(Entity):
             self.last_time = now
             self.speed += 1
             print(self.speed)
-=======
-        if keys[pygame.K_SPACE] and self.on_ground:
-            print("PLAYER JUMP")
-            self.jump(self.jump_size)
-
-    # def 
->>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
 
     def update(self):
         self.input()

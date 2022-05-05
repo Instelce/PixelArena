@@ -24,13 +24,6 @@ class Enemy(Entity):
         self.player_vector = self.get_direction(self.rect.x, self.player.rect.x)
         self.direction = self.player_vector
 
-    def dodge(self):
-        if self.on_right:
-            self.jump(self.jump_size)
-        else:
-            self.track_player()
-
     def update(self):
         self.track_player()
-        self.dodge()
         self.move(self.speed)
