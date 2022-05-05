@@ -12,7 +12,7 @@ class Enemy(Entity):
 
         self.image = pygame.Surface((32, 64))
         self.image.fill('gray')
-        self.speed = 4
+        self.speed = 2
 
     def get_direction(self, start_pos, end_pos):
         start = pygame.math.Vector2(start_pos)
@@ -24,6 +24,13 @@ class Enemy(Entity):
         self.player_vector = self.get_direction(self.rect.x, self.player.rect.x)
         self.direction = self.player_vector
 
+    def dodge(self):
+        if self.on_right:
+            self.jump(self.jump_size)
+        else:
+            self.track_player()
+
     def update(self):
         self.track_player()
+        self.dodge()
         self.move(self.speed)

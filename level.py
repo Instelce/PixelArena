@@ -3,10 +3,11 @@ import pygame, math
 from settings import *
 from player import Player
 from debug import debug
-from tile import Tile
+from tile import Tile, Object
 from support import *
 from mouse import Mouse
 from enemy import Enemy
+from weapon import Weapon
 
 
 class Level:
@@ -16,6 +17,8 @@ class Level:
         self.last_time = pygame.time.get_ticks()
         self.visible_sprites = YSortCameraGroup(WORLD_WIDTH, WORLD_HEIGHT)
         self.obstacle_sprites = pygame.sprite.Group()
+        self.enemies_sprite = pygame.sprite.Group()
+
         self.mouse = Mouse()
 
         self.create_map()
@@ -24,7 +27,9 @@ class Level:
         self.in_build_mode = False
         self.build_range = (9 * TILE_SIZE, 6 * TILE_SIZE)
         self.build_range_rect = pygame.Rect(math.floor(SCREEN_WIDTH/2 - self.build_range[0]/2),math.floor(SCREEN_HEIGHT/2 - self.build_range[1]/2), self.build_range[0], self.build_range[1])
-        self.build_block = pygame.image.load('graphics/player/build/block.png').convert_alpha()
+        # self.build_block = pygame.image.load('graphics/player/build/block.png').convert_alpha()
+        self.build_block = pygame.Surface((TILE_SIZE, TILE_SIZE))
+        self.build_block.fill('gray')
         self.can_build = True
     
     def input(self):
@@ -43,10 +48,10 @@ class Level:
             'terrain': import_csv_layout('map/map_1_terrain.csv'),
             'player': import_csv_layout('map/map_1_player.csv'),
             'enemy': import_csv_layout('map/map_1_enemy.csv'),
+            'objects': import_csv_layout('map/map_1_objects.csv'),
         }
         graphics = {
             'terrain': import_cut_graphics('graphics/terrain.png'),
-            'grass': import_folder('../graphics/Grass'),
             'objects': import_folder('../graphics/objects')
         }
 
@@ -60,18 +65,28 @@ class Level:
                             surf = graphics['terrain'][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'player':
+<<<<<<< HEAD
                             self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
                         # if style == 'enemy':
                         #     Enemy((x, y), [self.visible_sprites], self.obstacle_sprites, self.player)
+=======
+                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites, self.create_attack)
+                        if style == 'enemy':
+                            Enemy((x, y), [self.visible_sprites, self.enemies_sprite], self.obstacle_sprites, self.player)
+                        if style == 'objects':
+                            surf = pygame.image.load("graphics/objects/relique.png").convert_alpha()
+                            Object((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
+>>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
 
+    # BUILD
     def build(self):
         now = pygame.time.get_ticks()
         mouse_pos = pygame.mouse.get_pos()
         build_cursor_border = 2
 
         # Preview
-        build_preview = pygame.image.load('graphics/player/build/block.png')
-        build_preview.set_alpha(100)
+        # build_preview = pygame.image.load('graphics/player/build/block.png')
+        # build_preview.set_alpha(100)
         
         # Draw build range
         pygame.draw.rect(self.display_surface, "blue", self.build_range_rect, 2)
@@ -84,7 +99,7 @@ class Level:
                 
                 if tile.colliderect(self.build_range_rect) and not tile.colliderect(self.player.rect):
                     # Can build
-                    self.display_surface.blit(build_preview, (tile.x, tile.y))
+                    # self.display_surface.blit(build_preview, (tile.x, tile.y))
                     pygame.draw.rect(self.display_surface, "white", tile, build_cursor_border)
 
                     offset_pos = self.visible_sprites.get_offset_pos(self.player, (self.grid_tile_selected.x, self.grid_tile_selected.y), sign='+')
@@ -101,7 +116,7 @@ class Level:
                         print(f"DESTROY A BLOCK : {offset_pos}")
                         
                         for sprite in self.obstacle_sprites:
-                            if sprite.hitbox.collidepoint(offset_pos):
+                            if sprite.rect.collidepoint(offset_pos):
                                 sprite.kill()
 
     def create_build_grid(self):
@@ -111,6 +126,10 @@ class Level:
                 offset_pos = self.visible_sprites.get_offset_pos(self.player, (x,y))
                 tile = pygame.Rect(offset_pos[0], offset_pos[1], TILE_SIZE, TILE_SIZE)
                 self.grid_tiles.append(tile)
+    
+    # ATTACK
+    def create_attack(self):
+        Weapon(self.player, [self.visible_sprites])
 
     def run(self):
         # Update and draw the game
@@ -122,8 +141,7 @@ class Level:
 
         self.visible_sprites.update()
         self.visible_sprites.set_target(self.player)
-        # for sprite in self.visible_sprites:
-        #     self.display_surface.blit(sprite.image, self.visible_sprites.apply(sprite.rect))
+
         self.mouse.update()
 
         # Debug
@@ -134,6 +152,7 @@ class Level:
         debug(self.player.speed, 50)
         # debug(f"selected tile pos : {self.grid_tile_selected.x}, {self.grid_tile_selected.y}", 50)
         debug(f"in_build_mode : {self.in_build_mode}", 60)
+        debug(f"player.direction : {self.player.direction}", 70)
 
 
 class YSortCameraGroup(pygame.sprite.Group):

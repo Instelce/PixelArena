@@ -1,5 +1,7 @@
 import pygame
 
+from settings import TILE_SIZE
+
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, groups, obstacle_sprites) -> None:
@@ -14,7 +16,7 @@ class Entity(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 10
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_size = -20
 
         # Player status
         self.current_x = 0
@@ -44,9 +46,16 @@ class Entity(pygame.sprite.Sprite):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
             
+        # Horizontal
         self.rect.x += self.direction.x * speed
         self.collision('horizontal')
+<<<<<<< HEAD
         self.rect.y += self.direction.y * speed
+=======
+
+        # Vertical
+        self.apply_gravity()
+>>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
         self.collision('vertical')
 
     def collision(self, direction):
@@ -79,10 +88,24 @@ class Entity(pygame.sprite.Sprite):
                         self.on_top = True
 
             # Reset on_ground and on_ceiling
+<<<<<<< HEAD
             if self.on_bottom and self.direction.y < 0 or self.direction.y > 1:
                 self.on_bottom = False
             elif self.on_top and self.direction.y > 0:
                 self.on_top = False
+=======
+            if self.on_ground and self.direction.y < 0 or self.direction.y > 1:
+                self.on_ground = False
+            elif self.on_ceiling and self.direction.y > 0:
+                self.on_ceiling = False
+
+    def apply_gravity(self):
+        self.direction.y += self.gravity
+        self.rect.y += self.direction.y
+
+    def jump(self, strenght):
+        self.direction.y = strenght
+>>>>>>> e67f4191dfea6e45b0c45badee0725e4aa3d02b8
 
     def update(self):
         self.animate()
