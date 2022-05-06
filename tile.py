@@ -16,3 +16,4 @@ class Object(pygame.sprite.Sprite):
         self.display_surface = pygame.display.get_surface()
         self.image = surface
         self.rect = self.image.get_rect(center=pos)
+        self.hitbox = pygame.Rect(pos[0], pos[1], surface.get_size()[0], surface.get_size()[1])

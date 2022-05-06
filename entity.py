@@ -11,6 +11,7 @@ class Entity(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((32, 64))
         self.rect = self.image.get_rect(topleft=pos)
+        self.hitbox = self.rect.inflate(0, 0)
 
         # Movements
         self.direction = pygame.math.Vector2(0, 0)
@@ -47,40 +48,42 @@ class Entity(pygame.sprite.Sprite):
             self.direction = self.direction.normalize()
             
         # Horizontal
-        self.rect.x += self.direction.x * speed
+        self.hitbox.x += self.direction.x * speed
         self.collision('horizontal')
 
         # Vertical
-        self.rect.y += self.direction.y * speed
+        self.hitbox.y += self.direction.y * speed
         self.collision('vertical')
+
+        self.rect.center = self.hitbox.center
 
     def collision(self, direction):
         if direction == 'horizontal':
             for sprite in self.obstacle_sprites:
-                if sprite.rect.colliderect(self.rect):
+                if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.x > 0: # Right
-                        self.rect.right = sprite.rect.left
+                        self.hitbox.right = sprite.hitbox.left
                         self.on_right = True
-                        self.current_x = self.rect.right
+                        self.current_x = self.hitbox.right
                     if self.direction.x < 0: # Left
-                        self.rect.left = sprite.rect.right
+                        self.hitbox.left = sprite.hitbox.right
                         self.on_left = True
-                        self.current_x = self.rect.left
+                        self.current_x = self.hitbox.left
             
             # Reset on_right and on_left
-            if self.on_right and (self.rect.right < self.current_x or self.direction.x <= 0):
+            if self.on_right and (self.hitbox.right < self.current_x or self.direction.x <= 0):
                 self.on_right = False
-            elif self.on_left and (self.rect.left < self.current_x or self.direction.x >= 0):
+            elif self.on_left and (self.hitbox.left < self.current_x or self.direction.x >= 0):
                 self.on_left = False
 
         if direction == 'vertical':
             for sprite in self.obstacle_sprites:
-                if sprite.rect.colliderect(self.rect):
+                if sprite.hitbox.colliderect(self.hitbox):
                     if self.direction.y > 0: # Down
-                        self.rect.bottom = sprite.rect.top
+                        self.hitbox.bottom = sprite.hitbox.top
                         self.on_bottom = True
                     if self.direction.y < 0: # Up
-                        self.rect.top = sprite.rect.bottom
+                        self.hitbox.top = sprite.hitbox.bottom
                         self.on_top = True
 
             # Reset on_ground and on_ceiling

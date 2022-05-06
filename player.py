@@ -13,6 +13,7 @@ class Player(Entity):
         self.image.fill('purple')
 
         self.speed = 5
+        self.hitbox = self.rect.inflate(0, -60)
 
         self.last_time = pygame.time.get_ticks()
 
@@ -27,6 +28,7 @@ class Player(Entity):
     def input(self):
         keys = pygame.key.get_pressed()
 
+        # X axis
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.direction.x = 1
             self.accelerate()
@@ -37,6 +39,7 @@ class Player(Entity):
             self.speed = 5
             self.direction.x = 0
 
+        # Y axis
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.direction.y = 1
             self.accelerate()
@@ -46,6 +49,19 @@ class Player(Entity):
         else:
             self.speed = 5
             self.direction.y = 0
+        
+        # Attack input
+        if keys[pygame.K_SPACE] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            self.create_attack()
+            print("Attack")
+
+         # Magic input
+        if keys[pygame.K_LCTRL] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            print("Magic")
 
     def accelerate(self):
         now = pygame.time.get_ticks()
@@ -55,7 +71,15 @@ class Player(Entity):
             self.speed += 1
             print(self.speed)
 
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.attacking:
+            if current_time - self.attack_time >= self.attack_cooldown:
+                self.attacking = False
+
     def update(self):
         self.input()
         self.animate()
+        self.cooldowns()
         self.move(self.speed)

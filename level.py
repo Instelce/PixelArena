@@ -27,9 +27,7 @@ class Level:
         self.in_build_mode = False
         self.build_range = (9 * TILE_SIZE, 6 * TILE_SIZE)
         self.build_range_rect = pygame.Rect(math.floor(SCREEN_WIDTH/2 - self.build_range[0]/2),math.floor(SCREEN_HEIGHT/2 - self.build_range[1]/2), self.build_range[0], self.build_range[1])
-        # self.build_block = pygame.image.load('graphics/player/build/block.png').convert_alpha()
-        self.build_block = pygame.Surface((TILE_SIZE, TILE_SIZE))
-        self.build_block.fill('gray')
+        self.build_block = pygame.image.load('graphics/player/build/block.png').convert_alpha()
         self.can_build = True
     
     def input(self):
@@ -79,8 +77,8 @@ class Level:
         build_cursor_border = 2
 
         # Preview
-        # build_preview = pygame.image.load('graphics/player/build/block.png')
-        # build_preview.set_alpha(100)
+        build_preview = pygame.image.load('graphics/player/build/block.png')
+        build_preview.set_alpha(100)
         
         # Draw build range
         pygame.draw.rect(self.display_surface, "blue", self.build_range_rect, 2)
@@ -93,7 +91,7 @@ class Level:
                 
                 if tile.colliderect(self.build_range_rect) and not tile.colliderect(self.player.rect):
                     # Can build
-                    # self.display_surface.blit(build_preview, (tile.x, tile.y))
+                    self.display_surface.blit(build_preview, (tile.x, tile.y))
                     pygame.draw.rect(self.display_surface, "white", tile, build_cursor_border)
 
                     offset_pos = self.visible_sprites.get_offset_pos(self.player, (self.grid_tile_selected.x, self.grid_tile_selected.y), sign='+')
