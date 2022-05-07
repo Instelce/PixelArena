@@ -29,20 +29,8 @@ class Entity(pygame.sprite.Sprite):
         self.obstacle_sprites = obstacle_sprites
 
     def animate(self):
-        # Set the rect
-        if self.on_bottom and self.on_right:
-            self.rect = self.image.get_rect(bottomright=self.rect.bottomright)
-        elif self.on_bottom and self.on_left:
-            self.rect = self.image.get_rect(bottomleft=self.rect.bottomleft)
-        elif self.on_bottom:
-            self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
-        if self.on_top and self.on_right:
-            self.rect = self.image.get_rect(topright=self.rect.topright)
-        elif self.on_top and self.on_left:
-            self.rect = self.image.get_rect(topleft=self.rect.topleft)
-        elif self.on_top:
-            self.rect = self.image.get_rect(midtop=self.rect.midtop)
-    
+        pass
+
     def move(self, speed):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()

@@ -7,6 +7,7 @@ from tile import Tile, Object
 from support import *
 from mouse import Mouse
 from enemy import Enemy
+from ui import UI
 from weapon import Weapon
 
 
@@ -29,6 +30,12 @@ class Level:
         self.build_range_rect = pygame.Rect(math.floor(SCREEN_WIDTH/2 - self.build_range[0]/2),math.floor(SCREEN_HEIGHT/2 - self.build_range[1]/2), self.build_range[0], self.build_range[1])
         self.build_block = pygame.image.load('graphics/player/build/block.png').convert_alpha()
         self.can_build = True
+
+        # Attack sprite
+        self.current_attack = None
+
+        # User interface
+        self.ui = UI()
     
     def input(self):
         keys = pygame.key.get_pressed()
@@ -63,7 +70,10 @@ class Level:
                             surf = graphics['terrain'][int(col)]
                             Tile((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'player':
-                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites, self.create_attack)
+                            self.player = Player((x, y), 
+                            [self.visible_sprites], self.obstacle_sprites, 
+                            self.create_attack, self.destroy_attack, 
+                            self.create_magic)
                         # if style == 'enemy':
                         #     Enemy((x, y), [self.visible_sprites, self.enemies_sprite], self.obstacle_sprites, self.player)
                         if style == 'objects':
@@ -119,9 +129,19 @@ class Level:
                 tile = pygame.Rect(offset_pos[0], offset_pos[1], TILE_SIZE, TILE_SIZE)
                 self.grid_tiles.append(tile)
     
-    # ATTACK
+    # WEAPON and MAGIC
     def create_attack(self):
-        Weapon(self.player, [self.visible_sprites])
+        self.current_attack = Weapon(self.player, [self.visible_sprites])
+    
+    def create_magic(self, style, strength, cost):
+        print(style)
+        print(strength)
+        print(cost)
+    
+    def destroy_attack(self):
+        if self.current_attack:
+            self.current_attack.kill()
+        self.current_attack = None
 
     def run(self):
         # Update and draw the game
@@ -133,7 +153,7 @@ class Level:
 
         self.visible_sprites.update()
         self.visible_sprites.set_target(self.player)
-
+        self.ui.display(self.player)
         self.mouse.update()
 
         # Debug
@@ -141,10 +161,10 @@ class Level:
         debug(self.player.direction, 20)
         debug(f"on_ground : {self.player.on_bottom}", 30)
         debug(self.player.rect.topleft, 40)
-        debug(self.player.speed, 50)
-        # debug(f"selected tile pos : {self.grid_tile_selected.x}, {self.grid_tile_selected.y}", 50)
+        debug(f"player.speed : {self.player.speed}", 50)
         debug(f"in_build_mode : {self.in_build_mode}", 60)
         debug(f"player.direction : {self.player.direction}", 70)
+        debug(f"player.status : {self.player.status}", 80)
 
 
 class YSortCameraGroup(pygame.sprite.Group):
