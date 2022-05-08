@@ -18,14 +18,15 @@ class Game:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit() 
+                    pygame.quit()
                     sys.exit()
 
             self.screen.fill((12, 12, 12))
             self.level.run()
-            
+
             pygame.display.update()
             self.clock.tick(FPS)
+
 
 if __name__ == '__main__':
     game = Game()
