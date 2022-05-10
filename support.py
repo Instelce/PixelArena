@@ -1,5 +1,6 @@
 from csv import reader
 from os import walk
+import json
 import pygame
 
 from settings import TILE_SIZE
@@ -12,6 +13,14 @@ def import_csv_layout(path):
         for row in layout:
             terrain_map.append(list(row))
         return terrain_map
+
+
+def import_json_data(path):
+    with open(path, 'r') as json_file:
+        data = json.load(json_file)
+        print(data)
+        # json_file.close()
+    return data
 
 
 def import_folder(path):
@@ -38,6 +47,7 @@ def import_cut_graphics(path):
             y = row * TILE_SIZE
 
             new_surf = pygame.Surface((TILE_SIZE, TILE_SIZE))
-            new_surf.blit(surface, (0, 0), pygame.Rect(x, y, TILE_SIZE, TILE_SIZE))
+            new_surf.blit(surface, (0, 0), pygame.Rect(
+                x, y, TILE_SIZE, TILE_SIZE))
             cut_tiles.append(new_surf)
     return cut_tiles

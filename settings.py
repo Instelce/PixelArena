@@ -1,8 +1,10 @@
 import pygame
 pygame.init()
 
-SCREEN_WIDTH = pygame.display.Info().current_w
-SCREEN_HEIGHT = pygame.display.Info().current_h
+SCREEN_WIDTH = 1200
+# SCREEN_WIDTH = pygame.display.Info().current_w
+SCREEN_HEIGHT = 700
+# SCREEN_HEIGHT = pygame.display.Info().current_h
 TILE_SIZE = 32
 WORLD_TILE_COUNT_WIDTH = 80
 WORLD_TILE_COUNT_HEIGHT = 50
@@ -15,7 +17,7 @@ BAR_HEIGHT = 20
 HEALTH_BAR_WIDTH = 200
 ENERGY_BAR_WIDTH = 140
 ITEM_BOX_SIZE = 80
-UI_FONT = 'graphics/font/PlayMeGames.ttf'
+UI_FONT = 'graphics/font/Gamer.ttf'
 UI_FONT_SIZE = 18
 
 # General colors
@@ -30,6 +32,8 @@ ENERGY_COLOR = 'blue'
 UI_BORDER_COLOR_ACTIVE = 'gold'
 
 # Menu
+TITLE_FONT_SIZE = 80
+BUTTON_FONT_SIZE = 26 
 COMPONENTS_GAP = 60
 
 # Weapons

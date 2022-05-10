@@ -88,7 +88,7 @@ class Level:
                                                      self.create_magic)
                             else:
                                 if col == '4':
-                                    enemy_name = 'spirit'
+                                    enemy_name = 'raccoon'
                                 Enemy(enemy_name,
                                       (x, y),
                                       [self.visible_sprites,

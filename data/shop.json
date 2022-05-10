@@ -1,0 +1,44 @@
+{
+	"sword": {
+		"name": "Sword",
+		"price": 10,
+		"graphics": "graphics/weapons/sword/full.png",
+		"category": "weapon",
+
+		"stats": {
+			"damage": 6,
+			"colldown": 100,
+		}
+	},
+	"axe": {
+		"name": "Axe",
+		"price": 12,
+		"graphics": "graphics/weapons/axe/full.png",
+		"category": "weapon",
+
+		"stats": {
+			"damage": 8,
+			"colldown": 120,
+		}
+	},
+	// "health": {
+	// 	"name": "Health Potion",
+	// 	"price": 5,
+	// 	"graphics": "",
+	// 	"category": "potion",
+
+	// 	"stats": {
+	// 		"health_regen": 20,
+	// 	}
+	// },
+	// "fire_armor": {
+	// 	"name": "Fire Armor",
+	// 	"price": 10,
+	// 	"graphics": "",
+	// 	"category": "armor",
+
+	// 	"stats": {
+	// 		"defence": 16,
+	// 	}
+	// }
+}

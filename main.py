@@ -4,6 +4,7 @@ import sys
 from settings import *
 from level import Level
 from menu import *
+from shop import Shop
 
 
 class Game:
@@ -13,26 +14,46 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.status = 'start_menu'
+        self.status = 'shop'
         # self.status = 'game'
 
         self.level = Level()
+        self.shop = Shop('shop',
+                         [
+                             Text("SHOP",
+                                  UI_FONT,
+                                  TITLE_FONT_SIZE,
+                                  "white",
+                                  (SCREEN_WIDTH / 2, 50),
+                                  ),
+                         ],
+                         "graphics/ui/background.png"
+                         )
         self.start_menu = Menu('simple_menu',
-                               "Pixel Arena",
                                [
                                    Text("PIXEL ARENA",
                                         UI_FONT,
-                                        40,
+                                        TITLE_FONT_SIZE,
                                         "white",
                                         (SCREEN_WIDTH / 2, 200)),
-                                   Button("Start", None,
+                                   Button("Start", self.create_level,
                                           (SCREEN_WIDTH / 2, 0)),
                                    Button("Shop", None, (SCREEN_WIDTH / 2, 0)),
                                    Button("Settings", None,
-                                          (SCREEN_WIDTH / 2, 0)),
-                                   Button("Quit", None, (SCREEN_WIDTH / 2, 0)),
+                                          (SCREEN_WIDTH / 2, 0)
+                                          ),
+                                   Button("Quit", self.quit, (SCREEN_WIDTH / 2, 0),
+                                          80),
                                ],
                                "graphics/ui/background.png")
+
+    def create_level(self):
+        self.level = Level()
+        self.status = 'game'
+
+    def quit(self):
+        pygame.quit()
+        sys.exit()
 
     def run(self):
         while True:
@@ -46,6 +67,8 @@ class Game:
             # Display scene
             if self.status == 'start_menu':
                 self.start_menu.display()
+            elif self.status == 'shop':
+                self.shop.display()
             else:
                 self.level.run()
 

@@ -5,9 +5,8 @@ from settings import *
 
 
 class Menu:
-    def __init__(self, menu_type, title, components, background) -> None:
+    def __init__(self, menu_type, components, background) -> None:
         self.menu_type = menu_type
-        self.title = title
         self.components = components
         self.background = pygame.transform.scale(
             pygame.image.load(background).convert_alpha(), (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -19,12 +18,15 @@ class Menu:
 
         if not positionned:
             start_pos = list(self.components[0].pos)
+
             for i in range(len(self.components)):
                 if i >= 1:
                     component = self.components[i]
                     component_pos = list(component.pos)
-                    component_size = list(component.size)
+                    component_size = list(self.components[i].size)
                     print(start_pos, component_pos, component_size)
+
+                    # Repos
                     new_pos = start_pos[1] + \
                         component_size[1] + component.margin * i
                     component_pos[1] = new_pos
@@ -50,7 +52,7 @@ class Menu:
 
 
 class Button:
-    def __init__(self, text, callback, pos, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png", margin=60) -> None:
+    def __init__(self, text, callback, pos, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
         self.text = text
         self.callback = callback
         self.pos = pos
@@ -82,14 +84,13 @@ class Button:
             self.display_surface.blit(self.image, self.rect)
 
     def display_text(self):
-        font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        font = pygame.font.Font(UI_FONT, BUTTON_FONT_SIZE)
         text_surf = font.render(self.text, False, "black")
         text_rect = text_surf.get_rect(center=self.rect.center)
         self.display_surface.blit(text_surf, text_rect)
 
     def display(self):
-        if self.pos != None:
-            self.rect = self.image.get_rect(midtop=self.pos)
+        self.rect = self.image.get_rect(midtop=self.pos)
         self.check_hover_click()
         self.display_text()
 
@@ -105,8 +106,8 @@ class Text:
         # Text
         self.font = pygame.font.Font(font, font_size)
         self.text_surf = self.font.render(str(text), False, color)
-        self.text_rect = self.text_surf.get_rect(midtop=pos)
+        self.rect = self.text_surf.get_rect(midtop=pos)
         self.size = font_size
 
     def display(self):
-        self.display_surface.blit(self.text_surf, self.text_rect)
+        self.display_surface.blit(self.text_surf, self.rect)
