@@ -1,5 +1,8 @@
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 700
+import pygame
+pygame.init()
+
+SCREEN_WIDTH = pygame.display.Info().current_w
+SCREEN_HEIGHT = pygame.display.Info().current_h
 TILE_SIZE = 32
 WORLD_TILE_COUNT_WIDTH = 80
 WORLD_TILE_COUNT_HEIGHT = 50
@@ -25,6 +28,9 @@ TEXT_COLOR = '#EEEEEE'
 HEALTH_COLOR = 'red'
 ENERGY_COLOR = 'blue'
 UI_BORDER_COLOR_ACTIVE = 'gold'
+
+# Menu
+COMPONENTS_GAP = 60
 
 # Weapons
 weapon_data = {
