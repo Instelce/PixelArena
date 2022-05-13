@@ -10,6 +10,7 @@ from entity import Entity
 class Player(Entity):
     def __init__(self, pos, groups, obstacle_sprites, create_attack, destroy_attack, create_magic) -> None:
         super().__init__(groups)
+        self.sprite_type = 'player'
         self.image = pygame.Surface((32, 64))
         self.image.fill('purple')
         self.rect = self.image.get_rect(topleft=pos)

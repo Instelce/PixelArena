@@ -24,7 +24,7 @@ class Menu:
                     component = self.components[i]
                     component_pos = list(component.pos)
                     component_size = list(self.components[i].size)
-                    print(start_pos, component_pos, component_size)
+                    # print(start_pos, component_pos, component_size)
 
                     # Repos
                     new_pos = start_pos[1] + \
@@ -96,7 +96,8 @@ class Button:
 
 
 class Text:
-    def __init__(self, text, font, font_size, color, pos, margin=40):
+    def __init__(self, text_type, text, font, font_size, color, pos, margin=40):
+        self.text_type = text_type
         self.text = text
         self.margin = margin
         self.pos = pos
@@ -106,7 +107,10 @@ class Text:
         # Text
         self.font = pygame.font.Font(font, font_size)
         self.text_surf = self.font.render(str(text), False, color)
-        self.rect = self.text_surf.get_rect(midtop=pos)
+        if self.text_type == 'title':
+            self.rect = self.text_surf.get_rect(midtop=pos)
+        else:
+            self.rect = self.text_surf.get_rect(topleft=pos)
         self.size = font_size
 
     def display(self):

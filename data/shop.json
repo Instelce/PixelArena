@@ -1,44 +1,56 @@
 {
-	"sword": {
-		"name": "Sword",
-		"price": 10,
-		"graphics": "graphics/weapons/sword/full.png",
-		"category": "weapon",
+    "weapon": [{
+        "name": "Sword",
+        "price": 20,
 
-		"stats": {
-			"damage": 6,
-			"colldown": 100,
-		}
-	},
-	"axe": {
-		"name": "Axe",
-		"price": 12,
+        "graphics": "graphics/weapons/sword/full.png",
+        "category": "weapon",
+
+        "stats": {
+            "damage": 6,
+            "colldown": 100,
+        }
+    }, {
+        "name": "Axe",
+        "price": 20,
+
+        "graphics": "graphics/weapons/axe/full.png",
+        "category": "weapon",
+
+        "stats": {
+            "damage": 8,
+            "colldown": 120,
+        }
+    },
+	{
+        "name": "lance",
+        "price": 25,
+
+        "graphics": "graphics/weapons/lance/full.png",
+        "category": "weapon",
+
+        "stats": {
+            "damage": 6,
+            "colldown": 100,
+        }
+    },],
+    "potion": [{
+    	"name": "Health Potion",
+        "price": 5,
+        "graphics": "graphics/weapons/axe/full.png",
+        "category": "potion",
+        "stats": {
+            "health_regen": 20,
+        }
+    },
+	{
+		"name": "Mana Potion",
+		"price": 8,
+
 		"graphics": "graphics/weapons/axe/full.png",
-		"category": "weapon",
-
-		"stats": {
-			"damage": 8,
-			"colldown": 120,
-		}
-	},
-	// "health": {
-	// 	"name": "Health Potion",
-	// 	"price": 5,
-	// 	"graphics": "",
-	// 	"category": "potion",
-
-	// 	"stats": {
-	// 		"health_regen": 20,
-	// 	}
-	// },
-	// "fire_armor": {
-	// 	"name": "Fire Armor",
-	// 	"price": 10,
-	// 	"graphics": "",
-	// 	"category": "armor",
-
-	// 	"stats": {
-	// 		"defence": 16,
-	// 	}
-	// }
+        "category": "potion",
+        "stats": {
+            "mana_regen": 20,
+        }
+	}]
 }

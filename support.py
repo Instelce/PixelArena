@@ -15,14 +15,6 @@ def import_csv_layout(path):
         return terrain_map
 
 
-def import_json_data(path):
-    with open(path, 'r') as json_file:
-        data = json.load(json_file)
-        print(data)
-        # json_file.close()
-    return data
-
-
 def import_folder(path):
     surface_list = []
 
@@ -51,3 +43,10 @@ def import_cut_graphics(path):
                 x, y, TILE_SIZE, TILE_SIZE))
             cut_tiles.append(new_surf)
     return cut_tiles
+
+
+def read_json_file(path):
+    with open(path, 'r') as f:
+        cache = f.read()
+        data = eval(cache)
+    return data

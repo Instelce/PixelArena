@@ -59,12 +59,16 @@ class Level:
 
     def create_map(self):
         layouts = {
-            'terrain': import_csv_layout('map/map_1_terrain.csv'),
+            'wall': import_csv_layout('map/map_1_wall.csv'),
+            'grass': import_csv_layout('map/map_1_grass.csv'),
+            'stone_ground': import_csv_layout('map/map_1_stone_ground.csv'),
             'entities': import_csv_layout('map/map_1_entities.csv'),
             'objects': import_csv_layout('map/map_1_objects.csv'),
         }
         graphics = {
-            'terrain': import_cut_graphics('graphics/terrain.png'),
+            'wall': import_cut_graphics('graphics/terrain/wall.png'),
+            'grass': import_cut_graphics('graphics/terrain/grass.png'),
+            'stone_ground': import_cut_graphics('graphics/terrain/stone_ground.png'),
             'objects': import_folder('../graphics/objects')
         }
 
@@ -74,10 +78,11 @@ class Level:
                     if col != '-1':
                         x = col_index * TILE_SIZE
                         y = row_index * TILE_SIZE
-                        if style == 'terrain':
-                            surf = graphics['terrain'][int(col)]
-                            Tile((x, y), [self.visible_sprites,
-                                          self.obstacle_sprites], surf)
+
+                        if style == 'wall':
+                            surf = graphics['wall'][int(col)]
+                            Tile("wall", (x, y), [self.visible_sprites,
+                                                  self.obstacle_sprites], surf)
                         if style == 'entities':
                             if col == '0':
                                 self.player = Player((x, y),
@@ -95,12 +100,13 @@ class Level:
                                        self.attackable_sprites],
                                       self.obstacle_sprites,
                                       self.damage_player)
-
-                        if style == 'objects':
-                            surf = pygame.image.load(
-                                "graphics/objects/relique.png").convert_alpha()
-                            Object((x, y), [self.visible_sprites,
-                                            self.obstacle_sprites], surf)
+                        if style == 'stone_ground':
+                            surf = graphics['stone_ground'][int(col)]
+                            Tile("stone_ground", (x, y), [
+                                 self.visible_sprites], surf)
+                        # if style == 'grass':
+                        #     surf = graphics['grass'][int(col)]
+                        #     Tile("grass", (x, y), [self.visible_sprites], surf)
 
     # BUILD
     def build(self):
@@ -137,8 +143,8 @@ class Level:
                         print(f"BUILD A BLOCK : {offset_pos}")
                         self.last_time = now
 
-                        Tile(offset_pos, [self.visible_sprites,
-                                          self.obstacle_sprites], self.build_block)
+                        Tile("build_block", offset_pos, [self.visible_sprites,
+                                                         self.obstacle_sprites], self.build_block)
 
                     # Destroy block
                     if pygame.mouse.get_pressed()[2]:
@@ -207,7 +213,6 @@ class Level:
         self.mouse.update()
 
         # Debug
-        debug(pygame.mouse.get_pos())
         debug(self.player.direction, 20)
         debug(f"on_ground : {self.player.on_bottom}", 30)
         debug(self.player.rect.topleft, 40)
@@ -229,6 +234,9 @@ class YSortCameraGroup(pygame.sprite.Group):
         self.half_height = self.display_surface.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
 
+        self.background = pygame.image.load(
+            "map/map_1_grass.png").convert_alpha()
+
     def get_offset_pos(self, player, pos, sign="-"):
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
@@ -247,6 +255,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         # self.offset.y = max(-(self.height - SCREEN_HEIGHT), min(0, self.offset.y))
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
+        self.display_surface.blit(self.background, (0, 0) - self.offset)
 
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset
