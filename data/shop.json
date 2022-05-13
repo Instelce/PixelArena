@@ -33,7 +33,31 @@
             "damage": 6,
             "colldown": 100,
         }
-    },],
+    },
+    {
+        "name": "rapier",
+        "price": 25,
+
+        "graphics": "graphics/weapons/rapier/full.png",
+        "category": "weapon",
+
+        "stats": {
+            "damage": 4,
+            "colldown": 80,
+        }
+    },
+    {
+        "name": "sai",
+        "price": 25,
+
+        "graphics": "graphics/weapons/sai/full.png",
+        "category": "weapon",
+
+        "stats": {
+            "damage": 6,
+            "colldown": 100,
+        }
+    }],
     "potion": [{
     	"name": "Health Potion",
         "price": 5,
