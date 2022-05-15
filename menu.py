@@ -1,3 +1,4 @@
+from numpy import False_
 import pygame
 from math import floor
 
@@ -52,13 +53,14 @@ class Menu:
 
 
 class Button:
-    def __init__(self, text, callback, pos, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
-        self.text = text
+    def __init__(self, content, callback, pos, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
+        self.content = content
         self.callback = callback
         self.pos = pos
         self.margin = margin
 
         self.display_surface = pygame.display.get_surface()
+        self.click = False
 
         # Image
         self.default_image = default_image
@@ -77,22 +79,32 @@ class Button:
 
             # Click
             if pygame.mouse.get_pressed()[0]:
+                self.click = True
                 if self.callback != None:
                     self.callback()
+            else:
+                self.click = False
         else:
             self.image = pygame.image.load(self.default_image).convert_alpha()
             self.display_surface.blit(self.image, self.rect)
 
-    def display_text(self):
-        font = pygame.font.Font(UI_FONT, BUTTON_FONT_SIZE)
-        text_surf = font.render(self.text, False, "black")
-        text_rect = text_surf.get_rect(center=self.rect.center)
-        self.display_surface.blit(text_surf, text_rect)
+    def display_text_or_image(self):
+        if '/' in self.content or "\\" in self.content:
+            # Image
+            image = pygame.image.load(self.content).convert_alpha()
+            image_rect = image.get_rect(center=self.rect.center)
+            self.display_surface.blit(image, image_rect)
+        else:
+            # Text
+            font = pygame.font.Font(UI_FONT, BUTTON_FONT_SIZE)
+            text_surf = font.render(self.content, False, "black")
+            text_rect = text_surf.get_rect(center=self.rect.center)
+            self.display_surface.blit(text_surf, text_rect)
 
     def display(self):
         self.rect = self.image.get_rect(midtop=self.pos)
         self.check_hover_click()
-        self.display_text()
+        self.display_text_or_image()
 
 
 class Text:

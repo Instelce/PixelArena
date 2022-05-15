@@ -50,3 +50,9 @@ def read_json_file(path):
         cache = f.read()
         data = eval(cache)
     return data
+
+def write_json_file(path, data):
+    json_object = json.dumps(data, indent=4)
+    with open(path, 'w') as f:
+        f.write(json_object)
+    return data

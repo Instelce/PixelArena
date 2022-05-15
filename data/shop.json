@@ -1,80 +1,104 @@
 {
-    "weapon": [{
-        "name": "Sword",
-        "price": 20,
-
-        "graphics": "graphics/weapons/sword/full.png",
-        "category": "weapon",
-
-        "stats": {
-            "damage": 6,
-            "colldown": 100,
+    "weapons": [
+        {
+            "name": "Sword",
+            "price": 20,
+            "graphics": "graphics/weapons/sword/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 6,
+                "colldown": 100,
+            }
+        },
+        {
+            "name": "Big sword",
+            "price": 40,
+            "graphics": "graphics/weapons/sai/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 30,
+                "colldown": 200,
+            }
+        },
+        {
+            "name": "Axe",
+            "price": 22,
+            "graphics": "graphics/weapons/axe/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 8,
+                "colldown": 120,
+            }
+        },
+        {
+            "name": "lance",
+            "price": 25,
+            "graphics": "graphics/weapons/lance/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 6,
+                "colldown": 100,
+            }
+        },
+        {
+            "name": "rapier",
+            "price": 30,
+            "graphics": "graphics/weapons/rapier/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 4,
+                "colldown": 80,
+            }
+        },
+        {
+            "name": "sai",
+            "price": 28,
+            "graphics": "graphics/weapons/sai/full.png",
+            "category": "weapons",
+            "stats": {
+                "damage": 6,
+                "colldown": 100,
+            }
         }
-    }, {
-        "name": "Axe",
-        "price": 20,
-
-        "graphics": "graphics/weapons/axe/full.png",
-        "category": "weapon",
-
-        "stats": {
-            "damage": 8,
-            "colldown": 120,
+    ],
+    "potions": [
+        {
+            "name": "Health Potion",
+            "price": 5,
+            "graphics": "graphics/weapons/axe/full.png",
+            "category": "potions",
+            "stats": {
+                "health_regen": 20,
+            }
+        },
+        {
+            "name": "Mana Potion",
+            "price": 8,
+            "graphics": "graphics/weapons/axe/full.png",
+            "category": "potions",
+            "stats": {
+                "mana_regen": 20,
+            }
         }
-    },
-	{
-        "name": "lance",
-        "price": 25,
-
-        "graphics": "graphics/weapons/lance/full.png",
-        "category": "weapon",
-
-        "stats": {
-            "damage": 6,
-            "colldown": 100,
-        }
-    },
-    {
-        "name": "rapier",
-        "price": 25,
-
+    ],
+    "armors": [
+        {
+            "name": "Basic armor",
+            "price": 20,
+            "graphics": "graphics/weapons/rapier/full.png",
+            "category": "armors",
+            "stats": {
+                "defence": 4
+            }
+        },
+        {
+        "name": "Fire armor",
+        "price": 40,
         "graphics": "graphics/weapons/rapier/full.png",
-        "category": "weapon",
-
+        "category": "armors",
         "stats": {
-            "damage": 4,
-            "colldown": 80,
+            "defence": 8
         }
     },
-    {
-        "name": "sai",
-        "price": 25,
-
-        "graphics": "graphics/weapons/sai/full.png",
-        "category": "weapon",
-
-        "stats": {
-            "damage": 6,
-            "colldown": 100,
-        }
-    }],
-    "potion": [{
-    	"name": "Health Potion",
-        "price": 5,
-        "graphics": "graphics/weapons/axe/full.png",
-        "category": "potion",
-        "stats": {
-            "health_regen": 20,
-        }
-    },
-	{
-		"name": "Mana Potion",
-		"price": 8,
-
-		"graphics": "graphics/weapons/axe/full.png",
-        "category": "potion",
-        "stats": {
-            "mana_regen": 20,
-        }
-	}]
+    ]
 }
