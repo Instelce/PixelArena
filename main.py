@@ -19,7 +19,7 @@ class Game:
         self.scenes = {
             'start_menu': Menu('simple_menu',
                                [
-                                   Text("title",
+                                   Text("center",
                                         "PIXEL ARENA",
                                         UI_FONT,
                                         TITLE_FONT_SIZE,
@@ -38,7 +38,7 @@ class Game:
                                "graphics/ui/background.png"),
             'shop': Shop('shop',
                          [
-                             Text("title",
+                             Text("center",
                                   "SHOP",
                                   UI_FONT,
                                   TITLE_FONT_SIZE,
@@ -72,7 +72,7 @@ class Game:
 
     def run(self):
         while True:
-            for event in pygame.event.get():
+            for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()

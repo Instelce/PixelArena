@@ -1,8 +1,7 @@
-from debug import debug
 import pygame
-import json
+from math import floor
 
-
+from debug import debug
 from menu import *
 from support import *
 from settings import *
@@ -20,7 +19,8 @@ class Shop(Menu):
         # Card slider
         self.visible_cards = {}
         self.slider_index = 0
-        self.slider_arrows = []
+        self.slider_arrows = []        
+        self.slide_counter = {}
 
         # Card data
         self.shop_data = read_json_file("data/shop.json")
@@ -48,7 +48,7 @@ class Shop(Menu):
 
     def create_category_text(self):
         pos = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 180]
-        self.category_text = Text('title', self.active_category.upper(), UI_FONT, 40, 'white', pos)
+        self.category_text = Text('center', self.active_category.upper(), UI_FONT, 40, 'white', pos)
 
     def create_cards(self):
         card_size = [200, 240]
@@ -60,6 +60,7 @@ class Shop(Menu):
 
             self.cards[category] = []
             self.visible_cards[category] = [0, 1, 2]
+            self.slide_counter[category] = 1
 
             for item_place, item in enumerate(self.shop_data[category]):
                 pos = [start_pos[0] + (card_size[0] + gap) * item_place,
@@ -111,13 +112,19 @@ class Shop(Menu):
                                 self.visible_cards[category].remove(self.visible_cards[category][-1])
                                 self.visible_cards[category].insert(0, self.visible_cards[category][0] - 1)
                                 self.visible_cards[category].sort()
+                                self.slide_counter[self.active_category] -= 1
+                            
                         elif arrow_index == 1:
                             print("RIGHT")
                             if self.visible_cards[category][-1] < len(self.shop_data[category]) - 1:
                                 self.visible_cards[category].remove(self.visible_cards[category][0])
                                 self.visible_cards[category].append(self.visible_cards[category][-1] + 1)
                                 self.visible_cards[category].sort()
-    
+                                self.slide_counter[self.active_category] += 1       
+
+        self.slide_counter_text = Text('center', f"{self.slide_counter[self.active_category]}/{floor(len(self.shop_data[self.active_category]) - len(self.shop_data[self.active_category])/3)}", UI_FONT, UI_FONT_SIZE, "white", (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 140))
+        self.slide_counter_text.display()
+                        
     def change_category(self):
         for category in self.category_buttons:
             button = self.category_buttons[category]
@@ -142,15 +149,20 @@ class Shop(Menu):
                         self.create_cards()
 
     def display_slider_arrows(self):
+        left_arrow_pos = [180, SCREEN_HEIGHT / 2 - 50]
+        right_arrow_pos = [SCREEN_WIDTH - 180, SCREEN_HEIGHT / 2 - 50]
+
         # if self.visible_cards[self.active_category][0] == 0:
-        #     self.slider_arrows[1].image.set_alpha(0)
+        #     print("LEFT DISABLED")
+        #     self.slider_arrows[0].pos = [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2]
         # else:
-        #     self.slider_arrows[1].image.set_alpha(255)
+        #     self.slider_arrows[0].pos = left_arrow_pos
         # if self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
-        #     self.slider_arrows[0].image.set_alpha(0)
+        #     print("RIGHT DISABLED")
+        #     self.slider_arrows[1].pos = [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2]
         # else:
-        #     self.slider_arrows[0].image.set_alpha(255)
-            
+        #     self.slider_arrows[1].pos = right_arrow_pos
+
         for category in self.cards:
             for arrow_index, arrow in enumerate(self.slider_arrows):
                 if len(self.cards[category]) > 3:
@@ -204,7 +216,7 @@ class Card:
             center=[pos[0] + 100, pos[1] + 60])
 
         # Name
-        self.name_text = Text("normal", self.name, UI_FONT, 30, 'white',
+        self.name_text = Text("left", self.name, UI_FONT, 30, 'white',
                               [pos[0] + 20, pos[1] + self.size[1] / 2])
 
         # Buy button
@@ -216,7 +228,7 @@ class Card:
             40,
             "graphics/ui/card/button/default.png",
             "graphics/ui/card/button/hover.png")
-        self.price_text = Text('normal', self.price, UI_FONT, UI_FONT_SIZE, 'white', 
+        self.price_text = Text('left', self.price, UI_FONT, UI_FONT_SIZE, 'white', 
         [pos[0] + 22, pos[1] + 214])
 
         # Stats
@@ -255,7 +267,7 @@ class Card:
                    start_pos[1] + (UI_FONT_SIZE + gap) * stat_place]
 
             stat_text = Text(
-                "normal", f"{text} : {self.stats[stat]}", UI_FONT, UI_FONT_SIZE, "white", pos)
+                "left", f"{text} : {self.stats[stat]}", UI_FONT, UI_FONT_SIZE, "white", pos)
             self.stats_texts.append(stat_text)
     
     def update_rect(self):
@@ -267,7 +279,7 @@ class Card:
             center=[self.pos[0] + 100, self.pos[1] + 60])
 
         # Name
-        self.name_text = Text("normal", self.name, UI_FONT, 30, 'white',
+        self.name_text = Text("left", self.name, UI_FONT, 30, 'white',
                               [self.pos[0] + 20, self.pos[1] + self.size[1] / 2])
         
         # Stats

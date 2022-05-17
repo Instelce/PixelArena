@@ -68,8 +68,8 @@ class Enemy(Entity):
         distance = self.get_player_distance_direction(player)[0]
 
         if distance <= self.attack_radius and self.can_attack:
-            if self.status != 'attack':
-                self.frame_index = 0
+            # if self.status != 'attack':
+            #     self.frame_index = 0
             self.status = 'attack'
             self.can_attack = False
         elif distance <= self.notice_radius:

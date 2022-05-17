@@ -68,8 +68,7 @@ class Level:
         graphics = {
             'wall': import_cut_graphics('graphics/terrain/wall.png'),
             'grass': import_cut_graphics('graphics/terrain/grass.png'),
-            'stone_ground': import_cut_graphics('graphics/terrain/stone_ground.png'),
-            'objects': import_folder('../graphics/objects')
+            'objects': import_folder('graphics/objects')
         }
 
         for style, layout in layouts.items():
@@ -83,6 +82,9 @@ class Level:
                             surf = graphics['wall'][int(col)]
                             Tile("wall", (x, y), [self.visible_sprites,
                                                   self.obstacle_sprites], surf)
+                        if style == 'objects':
+                            surf = graphics['objects'][0]
+                            Object((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'entities':
                             if col == '0':
                                 self.player = Player((x, y),
@@ -93,17 +95,13 @@ class Level:
                                                      self.create_magic)
                             else:
                                 if col == '4':
-                                    enemy_name = 'raccoon'
+                                    enemy_name = 'slimevampire'
                                 Enemy(enemy_name,
                                       (x, y),
                                       [self.visible_sprites,
                                        self.attackable_sprites],
                                       self.obstacle_sprites,
                                       self.damage_player)
-                        if style == 'stone_ground':
-                            surf = graphics['stone_ground'][int(col)]
-                            Tile("stone_ground", (x, y), [
-                                 self.visible_sprites], surf)
                         # if style == 'grass':
                         #     surf = graphics['grass'][int(col)]
                         #     Tile("grass", (x, y), [self.visible_sprites], surf)

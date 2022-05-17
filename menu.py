@@ -108,8 +108,8 @@ class Button:
 
 
 class Text:
-    def __init__(self, text_type, text, font, font_size, color, pos, margin=40):
-        self.text_type = text_type
+    def __init__(self, alignement, text, font, font_size, color, pos, margin=40):
+        self.alignement = alignement
         self.text = text
         self.margin = margin
         self.pos = pos
@@ -119,7 +119,7 @@ class Text:
         # Text
         self.font = pygame.font.Font(font, font_size)
         self.text_surf = self.font.render(str(text), False, color)
-        if self.text_type == 'title':
+        if self.alignement == 'center':
             self.rect = self.text_surf.get_rect(midtop=pos)
         else:
             self.rect = self.text_surf.get_rect(topleft=pos)
