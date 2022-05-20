@@ -1,3 +1,6 @@
+api_graphics/
+data/player.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

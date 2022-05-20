@@ -1,5 +1,5 @@
 from csv import reader
-from os import walk
+import os
 import json
 import pygame
 
@@ -18,7 +18,7 @@ def import_csv_layout(path):
 def import_folder(path):
     surface_list = []
 
-    for _, __, image_files in walk(path):
+    for _, __, image_files in os.walk(path):
         for image in image_files:
             full_path = path + '/' + image
             image_surf = pygame.image.load(full_path).convert_alpha()
@@ -56,3 +56,16 @@ def write_json_file(path, data):
     with open(path, 'w') as f:
         f.write(json_object)
     return data
+
+
+def remove_directory(dir):
+    if dir[-1] == os.sep: dir = dir[:-1]
+    files = os.listdir(dir)
+    for file in files:
+        if file == '.' or file == '..': continue
+        path = dir + os.sep + file
+        if os.path.isdir(path):
+            remove_directory(path)
+        else:
+            os.unlink(path)
+    os.rmdir(dir)

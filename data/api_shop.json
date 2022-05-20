@@ -1,1 +1,24 @@
-{}
+{
+    "weapons": [
+        {
+            "name": "sword",
+            "price": 10,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/sword/full.png"
+        },
+        {
+            "name": "axe",
+            "price": 40,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/axe/full.png"
+        }
+    ],
+    "potions": [
+        {
+            "name": "health_potion",
+            "price": 10,
+            "category": "potions",
+            "graphics": "api_graphics/potions/health_potion/full.png"
+        }
+    ]
+}
