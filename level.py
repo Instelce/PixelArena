@@ -195,7 +195,7 @@ class Level:
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
 
-    def run(self):
+    def display(self):
         # Update and draw the game
         self.input()
 

@@ -29,28 +29,19 @@ class Api:
             root_responce = requests.get('http://127.0.0.1:8000/api/', headers=headers)
             self.root_data = json.loads(root_responce.content)    
 
-            # Categories
-            category_responce = requests.get(self.root_data['categories'], headers=headers)
-            self.category_data = json.loads(category_responce.content)
+            # Get api data
+            self.api_data = {}
+            for route in self.root_data:
+                route_responce = requests.get(self.root_data[route], headers=headers)
+                self.api_data[route] = json.loads(route_responce.content)
 
-            # Items
-            items_responce = requests.get(self.root_data['items'], headers=headers)
-            self.items_data = json.loads(items_responce.content)
-                
-            # Graphics
-            graphics_responce = requests.get(self.root_data['graphics'], headers=headers)
-            graphics_data = json.loads(graphics_responce.content)
-
-            for graphic in graphics_data:
+            for graphic in self.api_data['graphics']:
                 graphic_item = json.loads(requests.get(graphic['item'], headers=headers).text)
                 graphic_item_name = graphic_item['name']
                 graphic_image_url = graphic['image']
                 graphic_item_category = json.loads(requests.get(graphic_item['category'], headers=headers).text)['name']
 
                 filename = graphic_image_url.split('/')[-1]
-
-                print(filename, graphic_image_url)
-                print(graphic_item_name, graphic_item_category)
 
                 download_path = f'api_graphics/{graphic_item_category}/{graphic_item_name}/'
                 image_data = requests.get(graphic_image_url).content
@@ -70,23 +61,36 @@ class Api:
                         self.task = f'Downloading {filename} ...'
 
                         handler.write(image_data)
-                        print(f'Downloading {filename} ...')
+                        print(f'Downloading {filename} on the {download_path} directory with {graphic_image_url} url ...')
 
         # Get shop data
         shop_data = {}
 
-        for category in self.category_data:
+        for category in self.api_data['categories']:
             shop_data[category['name']] = []
 
-        for item_index, item in enumerate(self.items_data):
+        for item in self.api_data['items']:
             # Replace the category url by category name
             item_category = json.loads(requests.get(item['category'], headers=headers).text)['name']
             item['category'] = item_category
 
             item['graphics'] = f"api_graphics/{item['category']}/{item['name']}/full.png"
+            item['stats'] = {}
 
-            shop_data[item_category].append(item)    
+            shop_data[item_category].append(item)
 
+        for stat in self.api_data['stats']:
+            stat_item = json.loads(requests.get(stat['item'], headers=headers).content)
+            stat_item_name = stat_item['name']
+            stat_item_category = json.loads(requests.get(stat_item['category'], headers=headers).content)['name']
+
+            print(stat['name'], stat_item_name, stat_item_category)
+
+            for item in shop_data[stat_item_category]:
+                if item['name'] == stat_item_name:
+                    item['stats'][stat['name']] = stat['value']
+
+        # Write shop.json with shop data
         write_json_file('data/api_shop.json', {})       
         write_json_file('data/api_shop.json', shop_data)       
             
@@ -111,5 +115,5 @@ class Api:
 
 api = Api()
 
-api.authenticate('admin', '')
+api.authenticate('admin', 'print(sd10W)')
 api.download_data()

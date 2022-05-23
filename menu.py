@@ -1,5 +1,5 @@
-from numpy import False_
 import pygame
+import pygame.locals as pl
 from math import floor
 
 from settings import *
@@ -108,11 +108,11 @@ class Button:
 
 
 class Text:
-    def __init__(self, alignement, text, font, font_size, color, pos, margin=40):
+    def __init__(self, alignement, text, font=UI_FONT, font_size=UI_FONT_SIZE, color='white', pos=None, margin=40):
         self.alignement = alignement
         self.text = text
         self.margin = margin
-        self.pos = pos
+        self.pos = (SCREEN_WIDTH/2, 0) if pos is None else pos
 
         self.display_surface = pygame.display.get_surface()
 
@@ -127,3 +127,25 @@ class Text:
 
     def display(self):
         self.display_surface.blit(self.text_surf, self.rect)
+
+
+class Input:
+    def __init__(self, font=UI_FONT, font_size=UI_FONT_SIZE, color='white', pos=None, margin=None) -> None:
+        self.value = 'COUCOU'
+        self.display_surface = pygame.display.get_surface()
+        self.pos = (SCREEN_WIDTH/2, 0) if pos is None else pos
+        self.margin = 60 if margin is None else margin
+        self.size = (font_size, font_size)
+        self.font = pygame.font.Font(font, font_size)
+        self.color = color
+
+    def display(self): 
+        for event in pygame.event.get():
+            if event.type == pl.KEYDOWN:
+                if event.key == pl.K_BACKSPACE:
+                    self.value = self.value[:-1]
+                else:
+                    self.value += event.unicode
+
+        input_surface = self.font.render(self.value, True, self.color)
+        self.display_surface.blit(input_surface, self.pos)
