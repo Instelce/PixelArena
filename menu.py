@@ -1,6 +1,7 @@
 import string
 import pygame
 from math import floor
+from random import randint
 
 from settings import *
 
@@ -124,22 +125,45 @@ class LoadingBar:
         self.border = pygame.image.load(r"graphics\ui\loadingbar\border.png")
         self.rect = self.border.get_rect(midtop=self.pos)
         self.size = self.border.get_size()
+
+        self.task_text = Text('center', "", UI_FONT, UI_FONT_SIZE, 'white', self.border.get_rect().center)
+        self.bar_width = 0
+
+        self.task_index = 0
+        self.last_task_index = self.task_index
     
     def load(self):
         current_time = pygame.time.get_ticks()
-        print("GROSSE MERDOUILLE")
 
-        for index, task in enumerate(self.tasks):
-            print(task)
-            if current_time - self.last_time >= 500:
-                print("CACA")
-                self.last_time = current_time
-                ratio = index / len(self.tasks)
-                fill_rect = pygame.Rect(self.pos[0] + 6, self.pos[1] + 6, )
-                current_width = self.border.width * ratio
-                fill_rect.width = current_width
+        if current_time - self.last_time >= randint(500, 800) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
+            self.last_time = current_time
+            self.task_index += 1
 
-            pygame.draw.rect(self.display_surface, 'gray', fill_rect)
+        self.fill_rect = pygame.Rect(self.pos[0]-self.size[0]/2 + 6, self.pos[1] + 6, self.bar_width, self.size[1]-12)
+        self.task_text = Text('center', self.tasks[self.task_index], UI_FONT, UI_FONT_SIZE, 'white', self.rect.center)
+        
+        if self.last_task_index != self.task_index:
+            current_ratio = self.task_index / len(self.tasks)
+            last_ratio = self.last_task_index / len(self.tasks)
+            part_size = self.size[0] / len(self.tasks)
+            current_width = self.size[0] * current_ratio
+            last_width = self.size[0] * last_ratio
+
+            if self.bar_width <= current_width:
+                if current_time - self.last_time >= 10:
+                    self.last_time = current_time
+                    self.bar_width += 1
+            if self.bar_width == current_width:
+                self.last_task_index = self.task_index
+
+            print("INDEX CHANGE ---------------")
+            print(self.last_task_index, '/', self.task_index, '/', len(self.tasks))
+            print("size :", self.fill_rect.width)
+            print("current :", current_width, current_ratio)
+            print("last :", last_width, last_ratio)
+
+        pygame.draw.rect(self.display_surface, 'blue', self.fill_rect)
+        self.task_text.display()
     
     def display(self):
         self.load()
@@ -217,6 +241,7 @@ class Text:
         self.text_surf = self.font.render(str(text), False, color)
         if self.alignement == 'center':
             self.rect = self.text_surf.get_rect(midtop=self.pos)
+            # self.rect = self.text_surf.get_rect(center=self.pos)
         else:
             self.rect = self.text_surf.get_rect(topleft=self.pos)
         self.size = (font_size, font_size)

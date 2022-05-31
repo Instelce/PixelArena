@@ -22,6 +22,7 @@ class Game:
 
         # Scenes
         if self.api.is_authenticate:
+            self.api.download_data()
             self.status = 'loading_page'
         else:
             self.status = 'login_menu'
@@ -108,10 +109,17 @@ class Game:
         self.api.authenticate(username, password)
         self.player_data = read_json_file("data/player.json")
 
-        if self.api.is_authenticate:
-            self.status = 'start_menu'
-        else:
+        try:
+            self.api.authenticate(username, password)
+        except ValueError:
             self.status = 'login_menu'
+            self.scenes[self.status].components[1].value = ""
+            self.scenes[self.status].components[2].value = ""
+        
+        if self.api.is_authenticate:
+            self.api.download_data()
+            self.status = 'loading_page'
+            
 
     def disconnect(self):
         write_json_file("data/player.json", {
