@@ -7,23 +7,30 @@ from support import *
 
 class Api:
     def __init__(self) -> None:
+        self.player_data = read_json_file("data/player.json")
 
         # User
-        self.username = None
-        self.token = None
-        self.is_authenticate = False
+        if self.player_data['username'] != "":
+            self.username = self.player_data['username']
+            self.token = self.player_data['token']
+            self.is_authenticate = True
+        else:
+            self.username = None
+            self.token = None
+            self.is_authenticate = False
 
-        self.task = None
+        self.task = []
 
     def download_data(self):
         if self.is_authenticate:
             headers = {'Authorization': f'Token {self.token}'}
-            print(headers)
+            self.task.append("Login to API")
 
             # Delete and create graphics folder
             if os.path.exists('api_graphics'):
                 remove_directory('api_graphics')
             os.mkdir('api_graphics')
+            self.task.append("Remove all data")
 
             # Root
             root_responce = requests.get('http://127.0.0.1:8000/api/', headers=headers)
@@ -34,6 +41,7 @@ class Api:
             for route in self.root_data:
                 route_responce = requests.get(self.root_data[route], headers=headers)
                 self.api_data[route] = json.loads(route_responce.content)
+                self.task.append(f"Request {route}")
 
             for graphic in self.api_data['graphics']:
                 graphic_item = json.loads(requests.get(graphic['item'], headers=headers).text)
@@ -62,6 +70,7 @@ class Api:
 
                         handler.write(image_data)
                         print(f'Downloading {filename} on the {download_path} directory with {graphic_image_url} url ...')
+                        self.task.append(f"Downloading {filename} on the {download_path} directory")
 
         # Get shop data
         shop_data = {}
@@ -92,7 +101,8 @@ class Api:
 
         # Write shop.json with shop data
         write_json_file('data/api_shop.json', {})       
-        write_json_file('data/api_shop.json', shop_data)       
+        write_json_file('data/api_shop.json', shop_data)
+        self.task.append("Download shop data")    
             
     def authenticate(self, username, password):
         body_data = {
@@ -108,12 +118,19 @@ class Api:
             self.token = json.loads(responce.content)['token']
             self.is_authenticate = True
 
+            write_json_file("data/player.json", {
+                'username': self.username,
+                'token': self.token
+            })
+
             print(self.username, self.token, self.is_authenticate)
         except requests.exceptions.HTTPError as err:
             raise SystemExit(err)
+
+        return self.is_authenticate
         
 
-api = Api()
+# api = Api()
 
-api.authenticate('admin', 'print(sd10W)')
-api.download_data()
+# api.authenticate('admin', 'print(sd10W)')
+# api.download_data()

@@ -1,5 +1,5 @@
+import string
 import pygame
-import pygame.locals as pl
 from math import floor
 
 from settings import *
@@ -33,7 +33,7 @@ class Menu:
                     component_pos[1] = new_pos
                     component.pos = tuple(component_pos)
 
-                    positionned = True
+                positionned = True
 
     def display_components(self):
         for component in self.components:
@@ -52,11 +52,107 @@ class Menu:
         self.display_components()
 
 
+class SceneTransition:
+    def __init__(self) -> None:
+        self.display_surface = pygame.display.get_surface()
+        self.last_time = pygame.time.get_ticks()
+
+        self.original_image = pygame.image.load(r"graphics\ui\scene_transition.png").convert_alpha()
+        self.image = pygame.image.load(r"graphics\ui\scene_transition.png").convert_alpha()
+        self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)), (10, 10)
+        self.size = self.image.get_size()[0]
+
+        self.transition_is_finish = False
+        self.can_dicrease = False
+        self.cooldown = 1
+        self.grow = 100
+
+    def start(self):
+        if self.transition_is_finish:
+            self.transition_is_finish = False
+            self.can_dicrease = False
+            self.size = 100
+
+        max_size = SCREEN_WIDTH + (SCREEN_WIDTH/3)
+
+        current_time = pygame.time.get_ticks()
+
+        if not self.transition_is_finish:
+            if self.size <= max_size:
+                if current_time - self.last_time >= self.cooldown:
+                    self.last_time = current_time
+                    self.size += self.grow
+
+                    print('increase')
+                    print('size', self.size)
+
+                    if self.size >= max_size:
+                        self.can_dicrease = True
+                
+            self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+            self.image = pygame.transform.scale(self.original_image, (self.size, self.size)).convert_alpha()
+            self.display_surface.blit(self.image, self.rect)
+
+    def end(self):
+        if not self.transition_is_finish:
+            current_time = pygame.time.get_ticks()
+            
+            if current_time - self.last_time >= self.cooldown:
+                self.last_time = current_time
+                self.size -= self.grow
+
+                print("dicrease")
+                print('size', self.size)
+
+                if self.size <= 0:
+                    self.size = 0
+                    self.transition_is_finish = True
+
+            self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+            self.image = pygame.transform.scale(self.original_image, (self.size, self.size)).convert_alpha()
+            self.display_surface.blit(self.image, self.rect)
+
+
+class LoadingBar:
+    def __init__(self, tasks) -> None:
+        self.tasks = tasks
+        self.pos = (SCREEN_WIDTH/2, 0)
+        self.margin = 60
+        self.display_surface = pygame.display.get_surface()
+        self.last_time = pygame.time.get_ticks()
+
+        self.border = pygame.image.load(r"graphics\ui\loadingbar\border.png")
+        self.rect = self.border.get_rect(midtop=self.pos)
+        self.size = self.border.get_size()
+    
+    def load(self):
+        current_time = pygame.time.get_ticks()
+        print("GROSSE MERDOUILLE")
+
+        for index, task in enumerate(self.tasks):
+            print(task)
+            if current_time - self.last_time >= 500:
+                print("CACA")
+                self.last_time = current_time
+                ratio = index / len(self.tasks)
+                fill_rect = pygame.Rect(self.pos[0] + 6, self.pos[1] + 6, )
+                current_width = self.border.width * ratio
+                fill_rect.width = current_width
+
+            pygame.draw.rect(self.display_surface, 'gray', fill_rect)
+    
+    def display(self):
+        self.load()
+        self.rect = self.border.get_rect(midtop=self.pos)
+        self.display_surface.blit(self.border, self.rect)
+        
+
+
 class Button:
-    def __init__(self, content, callback, pos, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
+    def __init__(self, content, callback=None, pos=None, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
         self.content = content
         self.callback = callback
-        self.pos = pos
+        self.pos = (SCREEN_WIDTH/2, 200) if pos is None else pos
         self.margin = margin
 
         self.display_surface = pygame.display.get_surface()
@@ -108,7 +204,7 @@ class Button:
 
 
 class Text:
-    def __init__(self, alignement, text, font=UI_FONT, font_size=UI_FONT_SIZE, color='white', pos=None, margin=40):
+    def __init__(self, alignement, text, font=UI_FONT, font_size=UI_FONT_SIZE, color='white', pos=None, margin=60):
         self.alignement = alignement
         self.text = text
         self.margin = margin
@@ -120,32 +216,110 @@ class Text:
         self.font = pygame.font.Font(font, font_size)
         self.text_surf = self.font.render(str(text), False, color)
         if self.alignement == 'center':
-            self.rect = self.text_surf.get_rect(midtop=pos)
+            self.rect = self.text_surf.get_rect(midtop=self.pos)
         else:
-            self.rect = self.text_surf.get_rect(topleft=pos)
-        self.size = font_size
+            self.rect = self.text_surf.get_rect(topleft=self.pos)
+        self.size = (font_size, font_size)
 
     def display(self):
+        if self.alignement == 'center':
+            self.rect = self.text_surf.get_rect(midtop=self.pos)
+        else:
+            self.rect = self.text_surf.get_rect(topleft=self.pos)
         self.display_surface.blit(self.text_surf, self.rect)
 
 
 class Input:
-    def __init__(self, font=UI_FONT, font_size=UI_FONT_SIZE, color='white', pos=None, margin=None) -> None:
-        self.value = 'COUCOU'
+    def __init__(self, placeholder=None, font=UI_FONT, font_size=UI_FONT_SIZE, color='black', pos=None, margin=None) -> None:
+        self.value = ''
+        self.placeholder = 'Input' if placeholder is None else placeholder
+
         self.display_surface = pygame.display.get_surface()
         self.pos = (SCREEN_WIDTH/2, 0) if pos is None else pos
         self.margin = 60 if margin is None else margin
-        self.size = (font_size, font_size)
-        self.font = pygame.font.Font(font, font_size)
+        self.size = (200, font_size + 20)
+        self.font = pygame.font.SysFont('calibri', font_size)
+        self.font_size = font_size
         self.color = color
 
-    def display(self): 
-        for event in pygame.event.get():
-            if event.type == pl.KEYDOWN:
-                if event.key == pl.K_BACKSPACE:
-                    self.value = self.value[:-1]
-                else:
-                    self.value += event.unicode
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        self.cursor = pygame.Rect(self.pos[0] + len(self.value) * 5, self.pos[1], 2, font_size)
 
-        input_surface = self.font.render(self.value, True, self.color)
-        self.display_surface.blit(input_surface, self.pos)
+        self.last_time = pygame.time.get_ticks()
+        self.key_cooldown = 150
+
+        self.focus = False
+
+        self.get_input()
+
+    def get_input(self):
+        self.letters = list(string.printable)
+        self.special_caracters = "&é\"'(-è_çà"
+        self.number_caracters = "1234567890"
+        self.keys_keycode = {}
+
+        for letter in self.letters:
+            self.keys_keycode[letter] = pygame.key.key_code(letter)
+    
+    def check_focus(self):
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mouse_pos):
+            if pygame.mouse.get_pressed()[0]:
+                self.focus = True
+                self.color = 'white'
+        else:
+            if pygame.mouse.get_pressed()[0]:
+                self.focus = False
+                self.color = "black"
+
+    def get_key_pressed(self):
+        current_time = pygame.time.get_ticks()
+        keys = pygame.key.get_pressed()
+
+        if self.focus:
+            for keycode in self.keys_keycode:
+                if keys[self.keys_keycode[keycode]] and current_time - self.last_time >= self.key_cooldown:
+                    self.last_time = current_time
+                    if 49 <= self.keys_keycode[keycode] <= 61:
+                        if keys[pygame.K_LSHIFT]:
+                            self.value += pygame.key.name(self.keys_keycode[keycode])
+                        else:
+                            index = abs(61-(int(keycode)+61))-1
+                            print("INDEX", index)
+                            self.value += self.special_caracters[index]
+                    elif keys[pygame.K_LSHIFT]:
+                        self.value += pygame.key.name(self.keys_keycode[keycode]).upper()
+                    else:
+                        self.value += pygame.key.name(self.keys_keycode[keycode])
+                            
+            if keys[pygame.K_BACKSPACE] and current_time - self.last_time >= self.key_cooldown:
+                self.last_time = current_time
+                self.value = self.value[:-1]
+            if keys[pygame.K_SPACE] and current_time - self.last_time >= self.key_cooldown:
+                self.last_time = current_time
+                self.value += ' '
+
+            # print(self.value)
+
+    def display(self):
+        self.check_focus()
+
+        if self.value != '':
+            input_surface = self.font.render(self.value, True, self.color)
+        else:
+            input_surface = self.font.render(self.placeholder, True, self.color)
+        text_input_size = input_surface.get_size()
+        input_center = (self.rect.x + self.size[0] / 2 - text_input_size[0]/2, self.rect.y + self.size[1] / 2 - text_input_size[1]/2)
+        self.rect = pygame.Rect(self.pos[0] - self.size[0]/2, self.pos[1] - self.size[1]/2, self.size[0], self.size[1])
+        
+        if text_input_size[0] <= self.size[0] - 20:
+            self.get_key_pressed()
+
+
+        pygame.draw.rect(self.display_surface, self.color, self.rect, 2)
+        self.display_surface.blit(input_surface, input_center)
+
+        if self.focus and self.value != '':
+            self.cursor = pygame.Rect(input_center[0] + text_input_size[0], input_center[1], 1, self.font_size)
+            pygame.draw.rect(self.display_surface, self.color, self.cursor, 2)

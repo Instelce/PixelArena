@@ -6,6 +6,8 @@ from level import Level
 from menu import *
 from shop import Shop
 from debug import debug
+from api import Api
+from support import read_json_file, write_json_file
 
 
 class Game:
@@ -15,20 +17,45 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.status = 'login_menu'
+        self.player_data = read_json_file("data/player.json")
+        self.api = Api()
+
+        # Scenes
+        if self.api.is_authenticate:
+            self.status = 'loading_page'
+        else:
+            self.status = 'login_menu'
+        self.old_status = self.status
+
+        self.scene_transition = SceneTransition()
         self.scenes = {
+            'loading_page': Menu('simple_menu',
+                                 [
+                                     Text('center',
+                                        "Pixel Arena",
+                                        UI_FONT,
+                                        TITLE_FONT_SIZE,
+                                        "white",
+                                        (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 100)),
+                                    LoadingBar(self.api.task)
+                                 ],
+                                 "graphics/ui/background.png"
+                                 ),
             'login_menu': Menu('simple_menu',
-                                [
-                                    Text('center', 
-                                    "Login",
-                                    UI_FONT,
-                                    TITLE_FONT_SIZE,
-                                    "white",
-                                    (SCREEN_WIDTH/2, 200)),
-                                    Input()
-                                ],
-                                "graphics/ui/background.png"
-            ),
+                               [
+                                   Text('center',
+                                        "Login",
+                                        UI_FONT,
+                                        TITLE_FONT_SIZE,
+                                        "white",
+                                        (SCREEN_WIDTH/2, 200)),
+                                   Input("Username"),
+                                   Input("Password"),
+                                   Button("Login", self.login,
+                                          (SCREEN_WIDTH/2, 200), 50),
+                               ],
+                               "graphics/ui/background.png"
+                               ),
             'start_menu': Menu('simple_menu',
                                [
                                    Text("center",
@@ -36,16 +63,18 @@ class Game:
                                         UI_FONT,
                                         TITLE_FONT_SIZE,
                                         "white",
-                                        (SCREEN_WIDTH / 2, 200)),
-                                   Button("Start", self.create_level,
-                                          (SCREEN_WIDTH / 2, 0)),
-                                   Button("Shop", self.create_shop,
-                                          (SCREEN_WIDTH / 2, 0)),
-                                   Button("Settings", None,
-                                          (SCREEN_WIDTH / 2, 0)
-                                          ),
-                                   Button("Quit", self.quit, (SCREEN_WIDTH / 2, 0),
-                                          80),
+                                        (SCREEN_WIDTH / 2, 100)),
+                                   Text("center",
+                                        f"Login with {self.player_data['username']} account",
+                                        UI_FONT,
+                                        UI_FONT_SIZE,
+                                        "white",
+                                        (SCREEN_WIDTH / 2, 100)),
+                                   Button("Start", self.create_level),
+                                   Button("Shop", self.create_shop),
+                                   Button("Settings", None),
+                                   Button("Disconnect", self.disconnect, None),
+                                   Button("Quit", self.quit, None),
                                ],
                                "graphics/ui/background.png"),
             'shop': Shop('shop',
@@ -73,27 +102,49 @@ class Game:
     def create_level(self):
         self.status = 'level'
 
+    def login(self):
+        username = self.scenes[self.status].components[1].value
+        password = self.scenes[self.status].components[2].value
+        self.api.authenticate(username, password)
+        self.player_data = read_json_file("data/player.json")
+
+        if self.api.is_authenticate:
+            self.status = 'start_menu'
+        else:
+            self.status = 'login_menu'
+
+    def disconnect(self):
+        write_json_file("data/player.json", {
+            'username': "",
+            'token': "",
+        })
+        self.status = 'login_menu'
+
     def quit(self):
         pygame.quit()
         sys.exit()
 
+    def check_scene_change(self):
+        if self.old_status != self.status:
+            self.scenes[self.old_status].display()
+            self.scene_transition.start()
+
+            if self.scene_transition.can_dicrease:
+                self.old_status = self.status
+
+        if self.old_status == self.status:
+            self.scenes[self.status].display()
+            self.scene_transition.end()
+
     def run(self):
         while True:
-            for event in pygame.event.get(): 
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
             self.screen.fill((12, 12, 12))
-
-            # Display scene
-            # if self.status == 'start_menu':
-            #     self.start_menu.display()
-            # elif self.status == 'shop':
-            #     self.shop.display()
-            # else:
-            #     self.level.run()
-            self.scenes[self.status].display()
+            self.check_scene_change()
 
             debug(pygame.mouse.get_pos())
 
