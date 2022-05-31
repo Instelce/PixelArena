@@ -58,17 +58,16 @@ class SceneTransition:
         self.display_surface = pygame.display.get_surface()
         self.last_time = pygame.time.get_ticks()
 
-        self.original_image = pygame.image.load(r"graphics\ui\scene_transition.png").convert_alpha()
-        self.image = pygame.image.load(r"graphics\ui\scene_transition.png").convert_alpha()
-        self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)), (10, 10)
-        self.size = self.image.get_size()[0]
+        self.size = 0
 
         self.transition_is_finish = False
         self.can_dicrease = False
         self.cooldown = 1
         self.grow = 100
 
-    def start(self):
+    def start(self, status):
+        self.loading_text = Text('center', status.replace('_', ' ').upper(), UI_FONT, 40, 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+
         if self.transition_is_finish:
             self.transition_is_finish = False
             self.can_dicrease = False
@@ -89,12 +88,15 @@ class SceneTransition:
 
                     if self.size >= max_size:
                         self.can_dicrease = True
-                
-            self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-            self.image = pygame.transform.scale(self.original_image, (self.size, self.size)).convert_alpha()
-            self.display_surface.blit(self.image, self.rect)
 
-    def end(self):
+            pygame.draw.rect(self.display_surface, 'black', pygame.Rect(0, 0, self.size, SCREEN_HEIGHT))
+            
+            if self.size >= SCREEN_WIDTH/2:
+                self.loading_text.display()
+
+    def end(self, status):
+        self.loading_text = Text('center', status.replace('_', ' ').upper(), UI_FONT, 40, 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+
         if not self.transition_is_finish:
             current_time = pygame.time.get_ticks()
             
@@ -109,18 +111,20 @@ class SceneTransition:
                     self.size = 0
                     self.transition_is_finish = True
 
-            self.rect = self.image.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-            self.image = pygame.transform.scale(self.original_image, (self.size, self.size)).convert_alpha()
-            self.display_surface.blit(self.image, self.rect)
+            pygame.draw.rect(self.display_surface, 'black', pygame.Rect(SCREEN_WIDTH-self.size, 0, self.size, SCREEN_HEIGHT))
+            
+            if self.size >= SCREEN_WIDTH/2:
+                self.loading_text.display()
 
 
 class LoadingBar:
-    def __init__(self, tasks) -> None:
+    def __init__(self, tasks, redirect) -> None:
         self.tasks = tasks
         self.pos = (SCREEN_WIDTH/2, 0)
         self.margin = 60
         self.display_surface = pygame.display.get_surface()
         self.last_time = pygame.time.get_ticks()
+        self.redirect = redirect
 
         self.border = pygame.image.load(r"graphics\ui\loadingbar\border.png")
         self.rect = self.border.get_rect(midtop=self.pos)
@@ -135,19 +139,19 @@ class LoadingBar:
     def load(self):
         current_time = pygame.time.get_ticks()
 
-        if current_time - self.last_time >= randint(500, 800) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
+        if current_time - self.last_time >= randint(200, 500) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
             self.last_time = current_time
             self.task_index += 1
 
         self.fill_rect = pygame.Rect(self.pos[0]-self.size[0]/2 + 6, self.pos[1] + 6, self.bar_width, self.size[1]-12)
-        self.task_text = Text('center', self.tasks[self.task_index], UI_FONT, UI_FONT_SIZE, 'white', self.rect.center)
+        self.task_text = Text('center', self.tasks[self.task_index], UI_FONT, UI_FONT_SIZE, 'white', (self.rect.centerx, self.rect.centery - 6))
         
         if self.last_task_index != self.task_index:
             current_ratio = self.task_index / len(self.tasks)
             last_ratio = self.last_task_index / len(self.tasks)
             part_size = self.size[0] / len(self.tasks)
-            current_width = self.size[0] * current_ratio
-            last_width = self.size[0] * last_ratio
+            current_width = floor(self.size[0] * current_ratio)
+            last_width = floor(self.size[0] * last_ratio)
 
             if self.bar_width <= current_width:
                 if current_time - self.last_time >= 10:
@@ -161,6 +165,14 @@ class LoadingBar:
             print("size :", self.fill_rect.width)
             print("current :", current_width, current_ratio)
             print("last :", last_width, last_ratio)
+            print("tasks :", self.tasks[self.task_index])
+        
+        if self.task_index == len(self.tasks) - 1:
+            self.bar_width = 0
+            self.task_index = 0
+            self.last_task_index = 0
+
+            self.redirect()
 
         pygame.draw.rect(self.display_surface, 'blue', self.fill_rect)
         self.task_text.display()

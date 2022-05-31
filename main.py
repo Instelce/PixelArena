@@ -23,7 +23,7 @@ class Game:
         # Scenes
         if self.api.is_authenticate:
             self.api.download_data()
-            self.status = 'loading_page'
+            self.status = 'start_menu'
         else:
             self.status = 'login_menu'
         self.old_status = self.status
@@ -38,7 +38,7 @@ class Game:
                                         TITLE_FONT_SIZE,
                                         "white",
                                         (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 100)),
-                                    LoadingBar(self.api.task)
+                                    LoadingBar(self.api.tasks, self.create_start_menu)
                                  ],
                                  "graphics/ui/background.png"
                                  ),
@@ -96,6 +96,9 @@ class Game:
 
     def create_start_menu(self):
         self.status = 'start_menu'
+    
+    def create_loading_page(self):
+        self.status = 'loading_page'
 
     def create_shop(self):
         self.status = 'shop'
@@ -135,14 +138,14 @@ class Game:
     def check_scene_change(self):
         if self.old_status != self.status:
             self.scenes[self.old_status].display()
-            self.scene_transition.start()
+            self.scene_transition.start(self.status)
 
             if self.scene_transition.can_dicrease:
                 self.old_status = self.status
 
         if self.old_status == self.status:
             self.scenes[self.status].display()
-            self.scene_transition.end()
+            self.scene_transition.end(self.status)
 
     def run(self):
         while True:
