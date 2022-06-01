@@ -23,7 +23,7 @@ class Shop(Menu):
         self.slide_counter = {}
 
         # Card data
-        self.shop_data = read_json_file("data/shop.json")
+        self.shop_data = read_json_file("data/api_shop.json")
         self.cards = {}
         self.create_cards()
         self.create_slider_arrows()

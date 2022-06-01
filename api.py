@@ -66,8 +66,6 @@ class Api:
                 # Download image
                 if not os.path.exists(download_path+filename):
                     with open(f'{download_path}{filename}', 'wb') as handler:
-                        self.tasks.append(f'Downloading {filename} ...')
-
                         handler.write(image_data)
                         print(f'Downloading {filename} on the {download_path} directory with {graphic_image_url} url ...')
                         self.tasks.append(f"Downloading {filename} on the {download_path} directory")

@@ -66,7 +66,7 @@ class SceneTransition:
         self.grow = 100
 
     def start(self, status):
-        self.loading_text = Text('center', status.replace('_', ' ').upper(), UI_FONT, 40, 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        self.loading_text = Text('center', "Pixel Arena", UI_FONT, floor(self.size/20), 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
 
         if self.transition_is_finish:
             self.transition_is_finish = False
@@ -95,7 +95,7 @@ class SceneTransition:
                 self.loading_text.display()
 
     def end(self, status):
-        self.loading_text = Text('center', status.replace('_', ' ').upper(), UI_FONT, 40, 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        self.loading_text = Text('center', "Pixel Arena", UI_FONT, floor(self.size/20), 'white', (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
 
         if not self.transition_is_finish:
             current_time = pygame.time.get_ticks()
@@ -130,6 +130,7 @@ class LoadingBar:
         self.rect = self.border.get_rect(midtop=self.pos)
         self.size = self.border.get_size()
 
+        self.original_fill = pygame.image.load(r"graphics\ui\loadingbar\fill.png").convert_alpha()
         self.task_text = Text('center', "", UI_FONT, UI_FONT_SIZE, 'white', self.border.get_rect().center)
         self.bar_width = 0
 
@@ -139,11 +140,13 @@ class LoadingBar:
     def load(self):
         current_time = pygame.time.get_ticks()
 
-        if current_time - self.last_time >= randint(200, 500) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
+        if current_time - self.last_time >= randint(100, 400) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
             self.last_time = current_time
             self.task_index += 1
 
-        self.fill_rect = pygame.Rect(self.pos[0]-self.size[0]/2 + 6, self.pos[1] + 6, self.bar_width, self.size[1]-12)
+        self.fill_image = pygame.transform.scale(self.original_fill, (self.bar_width, self.size[1] - 12))
+        self.fill_rect = self.fill_image.get_rect(topleft=(self.pos[0]-self.size[0]/2 + 6, self.pos[1] + 6))
+
         self.task_text = Text('center', self.tasks[self.task_index], UI_FONT, UI_FONT_SIZE, 'white', (self.rect.centerx, self.rect.centery - 6))
         
         if self.last_task_index != self.task_index:
@@ -154,7 +157,7 @@ class LoadingBar:
             last_width = floor(self.size[0] * last_ratio)
 
             if self.bar_width <= current_width:
-                if current_time - self.last_time >= 10:
+                if current_time - self.last_time >= 5:
                     self.last_time = current_time
                     self.bar_width += 1
             if self.bar_width == current_width:
@@ -174,7 +177,7 @@ class LoadingBar:
 
             self.redirect()
 
-        pygame.draw.rect(self.display_surface, 'blue', self.fill_rect)
+        self.display_surface.blit(self.fill_image, self.fill_rect)
         self.task_text.display()
     
     def display(self):

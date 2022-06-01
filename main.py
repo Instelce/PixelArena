@@ -23,7 +23,7 @@ class Game:
         # Scenes
         if self.api.is_authenticate:
             self.api.download_data()
-            self.status = 'start_menu'
+            self.create_loading_page()
         else:
             self.status = 'login_menu'
         self.old_status = self.status
@@ -110,7 +110,6 @@ class Game:
         username = self.scenes[self.status].components[1].value
         password = self.scenes[self.status].components[2].value
         self.api.authenticate(username, password)
-        self.player_data = read_json_file("data/player.json")
 
         try:
             self.api.authenticate(username, password)
@@ -122,6 +121,8 @@ class Game:
         if self.api.is_authenticate:
             self.api.download_data()
             self.status = 'loading_page'
+
+        self.player_data = read_json_file("data/player.json")
             
 
     def disconnect(self):
@@ -135,7 +136,7 @@ class Game:
         pygame.quit()
         sys.exit()
 
-    def check_scene_change(self):
+    def display_scene(self):
         if self.old_status != self.status:
             self.scenes[self.old_status].display()
             self.scene_transition.start(self.status)
@@ -155,7 +156,7 @@ class Game:
                     sys.exit()
 
             self.screen.fill((12, 12, 12))
-            self.check_scene_change()
+            self.display_scene()
 
             debug(pygame.mouse.get_pos())
 

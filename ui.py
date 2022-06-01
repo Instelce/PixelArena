@@ -81,6 +81,9 @@ class UI:
 
         self.display_surface.blit(magic_surf, magic_rect)
 
+    def inventory_overlay(self):
+        pass
+
     def display(self, player):
         self.show_bar(
             player.health, player.stats['health'], self.health_bar_rect, HEALTH_COLOR)

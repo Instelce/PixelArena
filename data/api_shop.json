@@ -15,7 +15,10 @@
             "price": 40,
             "category": "weapons",
             "graphics": "api_graphics/weapons/axe/full.png",
-            "stats": {}
+            "stats": {
+                "damage": 5,
+                "cooldown": 200
+            }
         },
         {
             "name": "sai",
@@ -26,6 +29,26 @@
                 "damage": 10,
                 "cooldown": 120
             }
+        },
+        {
+            "name": "katana",
+            "price": 100,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/katana/full.png",
+            "stats": {
+                "damage": 1000,
+                "cooldown": 5
+            }
+        },
+        {
+            "name": "caca",
+            "price": 10000,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/caca/full.png",
+            "stats": {
+                "damage": 0,
+                "cooldown": 100
+            }
         }
     ],
     "potions": [
@@ -34,7 +57,9 @@
             "price": 10,
             "category": "potions",
             "graphics": "api_graphics/potions/health_potion/full.png",
-            "stats": {}
+            "stats": {
+                "health_regen": 5
+            }
         },
         {
             "name": "mana_potion",
@@ -42,7 +67,7 @@
             "category": "potions",
             "graphics": "api_graphics/potions/mana_potion/full.png",
             "stats": {
-                "health_regen": 20
+                "mana_regen": 20
             }
         }
     ]

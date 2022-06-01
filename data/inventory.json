@@ -1,5 +1,16 @@
 {
-    "weapons": [],
+    "weapons": [
+        {
+            "name": "sai",
+            "price": 50,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/sai/full.png",
+            "stats": {
+                "damage": 10,
+                "cooldown": 120
+            }
+        }
+    ],
     "potions": [],
     "armors": []
 }
