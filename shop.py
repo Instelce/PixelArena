@@ -145,7 +145,7 @@ class Shop(Menu):
                         card.pos = [start_pos[0] + (card_size[0] + gap) * visible_card_index, start_pos[1]]
                         card.display()
                     if card.data_is_update:
-                        self.shop_data = read_json_file("data/shop.json")
+                        self.shop_data = read_json_file("data/api_shop.json")
                         self.create_cards()
 
     def display_slider_arrows(self):
@@ -157,6 +157,7 @@ class Shop(Menu):
         #     self.slider_arrows[0].pos = [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2]
         # else:
         #     self.slider_arrows[0].pos = left_arrow_pos
+
         # if self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
         #     print("RIGHT DISABLED")
         #     self.slider_arrows[1].pos = [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2]
@@ -164,9 +165,17 @@ class Shop(Menu):
         #     self.slider_arrows[1].pos = right_arrow_pos
 
         for category in self.cards:
-            for arrow_index, arrow in enumerate(self.slider_arrows):
-                if len(self.cards[category]) > 3:
-                    arrow.display()
+            if len(self.cards[self.active_category]) > 3:
+                if self.visible_cards[self.active_category][0] == 0:
+                    print("LEFT DISABLED")
+                    self.slider_arrows[1].display()
+                elif self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
+                    print("RIGHT DISABLED")
+                    self.slider_arrows[0].display()
+                else:
+                    print("DISPLAY BOTH")
+                    for arrow_index, arrow in enumerate(self.slider_arrows):
+                        arrow.display()
 
     def display_category_buttons(self):
         for category in self.category_buttons:
@@ -176,19 +185,18 @@ class Shop(Menu):
         self.components_reposition()
         self.display_surface.blit(self.background, (0, 0))
 
+        self.change_category()
+        self.slide()
+
         self.display_cards()
         self.display_slider_arrows()
         self.display_category_buttons()
+        self.display_components()
 
         self.category_text.display()
         self.display_surface.blit(self.bottom_shade, self.bottom_shade_rect)
         self.back_button.display()
-
-        self.display_components()
         
-        self.change_category()
-        self.slide()
-
         debug(self.visible_cards[self.active_category], 20)
 
 
@@ -246,12 +254,12 @@ class Card:
             write_json_file("data/inventory.json", {})
             write_json_file("data/inventory.json", inventory_data)
 
-            # Update shop
-            shop_data = read_json_file("data/shop.json")
-            print(shop_data[self.category])
-            shop_data[self.category].remove(self.data)
-            write_json_file("data/shop.json", {})
-            write_json_file("data/shop.json", shop_data)
+            # Update shop (remove card)
+            # shop_data = read_json_file("data/api_shop.json")
+            # print(shop_data[self.category])
+            # shop_data[self.category].remove(self.data)
+            # write_json_file("data/api_shop.json", {})
+            # write_json_file("data/api_shop.json", shop_data)
             
             self.data_is_update = True
 
@@ -279,7 +287,7 @@ class Card:
             center=[self.pos[0] + 100, self.pos[1] + 60])
 
         # Name
-        self.name_text = Text("left", self.name, UI_FONT, 30, 'white',
+        self.name_text = Text("left", self.name.replace('_', ' ').upper(), UI_FONT, 30, 'white',
                               [self.pos[0] + 20, self.pos[1] + self.size[1] / 2])
         
         # Stats

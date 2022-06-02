@@ -185,8 +185,7 @@ class LoadingBar:
         self.rect = self.border.get_rect(midtop=self.pos)
         self.display_surface.blit(self.border, self.rect)
         
-
-
+        
 class Button:
     def __init__(self, content, callback=None, pos=None, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
         self.content = content
