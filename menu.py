@@ -83,8 +83,8 @@ class SceneTransition:
                     self.last_time = current_time
                     self.size += self.grow
 
-                    print('increase')
-                    print('size', self.size)
+                    # print('increase')
+                    # print('size', self.size)
 
                     if self.size >= max_size:
                         self.can_dicrease = True
@@ -104,8 +104,8 @@ class SceneTransition:
                 self.last_time = current_time
                 self.size -= self.grow
 
-                print("dicrease")
-                print('size', self.size)
+                # print("dicrease")
+                # print('size', self.size)
 
                 if self.size <= 0:
                     self.size = 0

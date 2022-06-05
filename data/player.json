@@ -1,4 +1,70 @@
 {
     "username": "Janneo",
-    "token": "58b87fd07ed5b85d67203bd796de1f6416baa330"
+    "token": "58b87fd07ed5b85d67203bd796de1f6416baa330",
+    "coins": 0,
+    "inventory": {
+        "weapons": [
+            {
+                "name": "sword",
+                "price": 10,
+                "category": "weapons",
+                "graphics": "api_graphics/weapons/sword/full.png",
+                "stats": {
+                    "damage": 5,
+                    "cooldown": 100
+                }
+            },
+            {
+                "name": "axe",
+                "price": 40,
+                "category": "weapons",
+                "graphics": "api_graphics/weapons/axe/full.png",
+                "stats": {
+                    "damage": 5,
+                    "cooldown": 200
+                }
+            },
+            {
+                "name": "caca",
+                "price": 10000,
+                "category": "weapons",
+                "graphics": "api_graphics/weapons/caca/full.png",
+                "stats": {
+                    "damage": 0,
+                    "cooldown": 100
+                }
+            },
+            {
+                "name": "sai",
+                "price": 50,
+                "category": "weapons",
+                "graphics": "api_graphics/weapons/sai/full.png",
+                "stats": {
+                    "damage": 10,
+                    "cooldown": 120
+                }
+            },
+            {
+                "name": "katana",
+                "price": 100,
+                "category": "weapons",
+                "graphics": "api_graphics/weapons/katana/full.png",
+                "stats": {
+                    "damage": 1000,
+                    "cooldown": 5
+                }
+            }
+        ],
+        "potions": [
+            {
+                "name": "mana_potion",
+                "price": 5,
+                "category": "potions",
+                "graphics": "api_graphics/potions/mana_potion/full.png",
+                "stats": {
+                    "mana_regen": 20
+                }
+            }
+        ]
+    }
 }

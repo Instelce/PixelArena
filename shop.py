@@ -61,15 +61,17 @@ class Shop(Menu):
             self.cards[category] = []
             self.visible_cards[category] = [0, 1, 2]
             self.slide_counter[category] = 1
-
+            
+            # for visible_index in self.visible_cards[category]:
             for item_place, item in enumerate(self.shop_data[category]):
                 pos = [start_pos[0] + (card_size[0] + gap) * item_place,
-                       start_pos[1]]
+                    start_pos[1]]
                 card = Card(pos, item)
+
+                # if item_place == visible_index:
                 self.cards[category].append(card)
 
                 print(item, item_place)
-                print(self.cards)
                 print(pos)
 
     def create_category_buttons(self):
@@ -98,7 +100,7 @@ class Shop(Menu):
     def slide(self):
         current_time = pygame.time.get_ticks()
 
-        for category in self.cards:
+        for category in self.shop_data:
             for arrow_index, arrow in enumerate(self.slider_arrows):
                 if arrow.click:
                     if current_time - self.last_time >= 200:
@@ -120,7 +122,9 @@ class Shop(Menu):
                                 self.visible_cards[category].remove(self.visible_cards[category][0])
                                 self.visible_cards[category].append(self.visible_cards[category][-1] + 1)
                                 self.visible_cards[category].sort()
-                                self.slide_counter[self.active_category] += 1       
+                                self.slide_counter[self.active_category] += 1
+                                
+                        # self.create_cards()
 
         self.slide_counter_text = Text('center', f"{self.slide_counter[self.active_category]}/{floor(len(self.shop_data[self.active_category]) - len(self.shop_data[self.active_category])/3)}", UI_FONT, UI_FONT_SIZE, "white", (SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 140))
         self.slide_counter_text.display()
@@ -146,7 +150,6 @@ class Shop(Menu):
                         card.display()
                     if card.data_is_update:
                         self.shop_data = read_json_file("data/api_shop.json")
-                        self.create_cards()
 
     def display_slider_arrows(self):
         left_arrow_pos = [180, SCREEN_HEIGHT / 2 - 50]
@@ -164,18 +167,18 @@ class Shop(Menu):
         # else:
         #     self.slider_arrows[1].pos = right_arrow_pos
 
-        for category in self.cards:
-            if len(self.cards[self.active_category]) > 3:
-                if self.visible_cards[self.active_category][0] == 0:
-                    print("LEFT DISABLED")
-                    self.slider_arrows[1].display()
-                elif self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
-                    print("RIGHT DISABLED")
-                    self.slider_arrows[0].display()
-                else:
-                    print("DISPLAY BOTH")
-                    for arrow_index, arrow in enumerate(self.slider_arrows):
-                        arrow.display()
+        for category in self.shop_data:
+            if len(self.shop_data[self.active_category]) > 3:
+                # if self.visible_cards[self.active_category][0] == 0:
+                #     print("LEFT DISABLED")
+                #     self.slider_arrows[1].display()
+                # elif self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
+                #     print("RIGHT DISABLED")
+                #     self.slider_arrows[0].display()
+                # else:
+                # print("DISPLAY BOTH")
+                for arrow_index, arrow in enumerate(self.slider_arrows):
+                    arrow.display()
 
     def display_category_buttons(self):
         for category in self.category_buttons:
@@ -243,16 +246,34 @@ class Card:
         self.stats_texts = []
         self.create_stats_text()
 
+        # Sold layer
+        self.sold_layer = pygame.image.load(r"graphics\ui\card\sold.png").convert_alpha()
+        self.is_buy = False
+
         # Data
+        self.shop_data = read_json_file("data/api_shop.json")
         self.data_is_update = False
+
+        self.check_is_buy()
+
+    def check_is_buy(self):
+        print("CHECK")
+        player_inventory = read_json_file("data/player.json")['inventory']
+        
+        for player_item in player_inventory[self.category]:
+            if player_item['name'] == self.name:
+                self.is_buy = True
 
     def update_inventory_shop_data(self):
         if not self.data_is_update:
             # Update inventory
-            inventory_data = read_json_file("data/inventory.json")
-            inventory_data[self.category].append(self.data)
-            write_json_file("data/inventory.json", {})
-            write_json_file("data/inventory.json", inventory_data)
+            player_data = read_json_file("data/player.json")
+            
+            if not player_data['inventory'][self.category]:
+                player_data['inventory'][self.category] = []
+
+            player_data['inventory'][self.category].append(self.data)
+            write_json_file("data/player.json", player_data)
 
             # Update shop (remove card)
             # shop_data = read_json_file("data/api_shop.json")
@@ -261,6 +282,7 @@ class Card:
             # write_json_file("data/api_shop.json", {})
             # write_json_file("data/api_shop.json", shop_data)
             
+            self.is_buy = True
             self.data_is_update = True
 
     def create_stats_text(self):
@@ -318,5 +340,9 @@ class Card:
         self.display_surface.blit(self.graphics_image, self.graphics_rect)
         self.name_text.display()
         self.display_stats()
-        self.buy_button.display()
         self.price_text.display()
+
+        if self.is_buy:
+            self.display_surface.blit(self.sold_layer, self.background_rect)
+        else:
+            self.buy_button.display()
