@@ -78,21 +78,26 @@ class Shop(Menu):
     def create_category_buttons(self):
         button_size = 50
         gap = 10
-        start_pos = [SCREEN_WIDTH/2 - len(self.shop_data)/2 * (button_size), SCREEN_HEIGHT/2 + 180]
-        print(start_pos)
+        start_pos = [SCREEN_WIDTH/2 - (len(self.shop_data)/2 * button_size + len(self.shop_data)/2 * gap), SCREEN_HEIGHT/2 + 180]
         for category_place, category in enumerate(self.shop_data):
             pos = [start_pos[0] + (button_size + gap) * category_place, start_pos[1]]
-            self.category_buttons[category] = Button(f"graphics/ui/categories/{category}.png", None, pos, 60, 
-            "graphics/ui/buttons/category/default.png",
-            "graphics/ui/buttons/category/hover.png")
+            self.category_buttons[category] = Button(
+                f"graphics/ui/categories/{category}.png", 
+                None, 
+                pos, 
+                60,
+                'topleft',
+                "graphics/ui/buttons/category/default.png",
+                "graphics/ui/buttons/category/hover.png"
+            )
 
     def create_slider_arrows(self):
         left_arrow_pos = [180, SCREEN_HEIGHT / 2 - 50]
         right_arrow_pos = [SCREEN_WIDTH - 180, SCREEN_HEIGHT / 2 - 50]
 
-        left_arrow = Button("", None, left_arrow_pos, 60,
+        left_arrow = Button("", None, left_arrow_pos, 60, 'midtop',
                             r"graphics\ui\arrow\left\default.png", r"graphics\ui\arrow\left\hover.png")
-        right_arrow = Button("", None, right_arrow_pos, 60,
+        right_arrow = Button("", None, right_arrow_pos, 60, 'midtop',
                                 r"graphics\ui\arrow\right\default.png", r"graphics\ui\arrow\right\hover.png")
 
         self.slider_arrows.append(left_arrow)
@@ -170,14 +175,18 @@ class Shop(Menu):
 
         for category in self.shop_data:
             if len(self.shop_data[self.active_category]) > 3:
-                # if self.visible_cards[self.active_category][0] == 0:
-                #     print("LEFT DISABLED")
-                #     self.slider_arrows[1].display()
-                # elif self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
-                #     print("RIGHT DISABLED")
-                #     self.slider_arrows[0].display()
-                # else:
-                # print("DISPLAY BOTH")
+                if self.visible_cards[self.active_category][0] == 0:
+                    self.slider_arrows[0].default_image = r'graphics\ui\arrow\left\disable.png'
+                    self.slider_arrows[0].hover_image = r'graphics\ui\arrow\left\disable.png'
+                elif self.visible_cards[self.active_category][-1] == len(self.shop_data[self.active_category]) - 1:
+                    self.slider_arrows[1].default_image = r'graphics\ui\arrow\right\disable.png'
+                    self.slider_arrows[1].hover_image = r'graphics\ui\arrow\right\disable.png'
+                else:
+                    self.slider_arrows[0].default_image = r'graphics\ui\arrow\left\default.png'
+                    self.slider_arrows[0].hover_image = r'graphics\ui\arrow\left\hover.png'
+                    self.slider_arrows[1].default_image = r'graphics\ui\arrow\right\default.png'
+                    self.slider_arrows[1].hover_image = r'graphics\ui\arrow\right\hover.png'
+
                 for arrow_index, arrow in enumerate(self.slider_arrows):
                     arrow.display()
 
@@ -242,9 +251,10 @@ class Card:
         self.buy_button = Button(
             "",
             self.update_inventory_data,
-            [pos[0] + (self.size[0] / 2) + 25, pos[1] +
+            [self.pos[0] + (self.size[0] / 2) + 25, self.pos[1] +
              (self.size[1] - 30) - 3],
             40,
+            'midtop',
             "graphics/ui/card/button/default.png",
             "graphics/ui/card/button/hover.png")
         self.price_text = Text('left', self.price, UI_FONT, UI_FONT_SIZE, 'white', 
@@ -265,9 +275,6 @@ class Card:
     def check_is_buy(self):
         player_inventory = read_json_file("data/player.json")['inventory']
 
-        if not self.category in player_inventory:
-            player_inventory[self.category] = []
-
         for player_item in player_inventory[self.category]:
             if player_item['name'] == self.name:
                 self.is_buy = True
@@ -276,9 +283,6 @@ class Card:
         if not self.data_is_update:
             # Update inventory
             player_data = read_json_file("data/player.json")
-
-            if not self.category in player_data['inventory']:
-                player_data['inventory'][self.category] = []
 
             player_data['inventory'][self.category].append(self.data)
             write_json_file("data/player.json", player_data)
@@ -333,6 +337,7 @@ class Card:
             [self.pos[0] + (self.size[0] / 2) + 25, self.pos[1] +
              (self.size[1] - 30) - 3],
             40,
+            'midtop',
             "graphics/ui/card/button/default.png",
             "graphics/ui/card/button/hover.png")
         self.price_text = Text('normal', self.price, UI_FONT, UI_FONT_SIZE, 'white', 

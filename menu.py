@@ -140,7 +140,7 @@ class LoadingBar:
     def load(self):
         current_time = pygame.time.get_ticks()
 
-        if current_time - self.last_time >= randint(100, 400) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
+        if current_time - self.last_time >= randint(50, 100) and self.task_index < len(self.tasks)-1 and self.last_task_index == self.task_index:
             self.last_time = current_time
             self.task_index += 1
 
@@ -157,7 +157,7 @@ class LoadingBar:
             last_width = floor(self.size[0] * last_ratio)
 
             if self.bar_width <= current_width:
-                if current_time - self.last_time >= 5:
+                if current_time - self.last_time >= 1:
                     self.last_time = current_time
                     self.bar_width += 1
             if self.bar_width == current_width:
@@ -187,11 +187,12 @@ class LoadingBar:
         
         
 class Button:
-    def __init__(self, content, callback=None, pos=None, margin=60, default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
+    def __init__(self, content, callback=None, pos=None, margin=60, rect_alignement='midtop', default_image="graphics/ui/buttons/button_large_default.png", hover_image="graphics/ui/buttons/button_large_hover.png") -> None:
         self.content = content
         self.callback = callback
         self.pos = (SCREEN_WIDTH/2, 200) if pos is None else pos
         self.margin = margin
+        self.rect_alignement = rect_alignement
 
         self.display_surface = pygame.display.get_surface()
         self.click = False
@@ -242,7 +243,10 @@ class Button:
             self.display_surface.blit(text_surf, text_rect)
 
     def display(self):
-        self.rect = self.image.get_rect(midtop=self.pos)
+        if self.rect_alignement == 'midtop':
+            self.rect = self.image.get_rect(midtop=self.pos)
+        elif self.rect_alignement == 'topleft':
+            self.rect = self.image.get_rect(topleft=self.pos)
         self.check_hover_click()
         self.display_text_or_image()
 

@@ -3,51 +3,7 @@
     "token": "7ac8eafcd40d6d22bd139555c834f0e5e2b14de0",
     "coins": 100,
     "inventory": {
-        "weapons": [
-            {
-                "name": "axe",
-                "price": 40,
-                "category": "weapons",
-                "player": "http://127.0.0.1:8000/api/players/1/",
-                "graphics": "api_graphics/weapons/axe/full.png",
-                "stats": {
-                    "damage": 5,
-                    "cooldown": 200
-                }
-            },
-            {
-                "name": "sword",
-                "price": 10,
-                "category": "weapons",
-                "player": "http://127.0.0.1:8000/api/players/1/",
-                "graphics": "api_graphics/weapons/sword/full.png",
-                "stats": {
-                    "damage": 5,
-                    "cooldown": 100
-                }
-            },
-            {
-                "name": "caca",
-                "price": 10000,
-                "category": "weapons",
-                "player": "http://127.0.0.1:8000/api/players/1/",
-                "graphics": "api_graphics/weapons/caca/full.png",
-                "stats": {
-                    "damage": 0,
-                    "cooldown": 100
-                }
-            },
-            {
-                "name": "katana",
-                "price": 100,
-                "category": "weapons",
-                "graphics": "api_graphics/weapons/katana/full.png",
-                "stats": {
-                    "damage": 1000,
-                    "cooldown": 5
-                }
-            }
-        ],
+        "weapons": [],
         "potions": []
     }
 }
