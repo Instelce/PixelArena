@@ -8,13 +8,14 @@ from settings import *
 
 
 class Shop(Menu):
-    def __init__(self, menu_type, components, background, create_start_menu) -> None:
+    def __init__(self, menu_type, components, background, api, create_start_menu) -> None:
         super().__init__(menu_type, components, background)
-
         self.display_surface = pygame.display.get_surface()
 
         self.padding_right = 250
         self.last_time = pygame.time.get_ticks()
+
+        self.api = api
 
         # Card slider
         self.visible_cards = {}
@@ -66,7 +67,7 @@ class Shop(Menu):
             for item_place, item in enumerate(self.shop_data[category]):
                 pos = [start_pos[0] + (card_size[0] + gap) * item_place,
                     start_pos[1]]
-                card = Card(pos, item)
+                card = Card(pos, item, self.api)
 
                 # if item_place == visible_index:
                 self.cards[category].append(card)
@@ -204,14 +205,16 @@ class Shop(Menu):
 
 
 class Card:
-    def __init__(self, pos, data) -> None:
+    def __init__(self, pos, data, api) -> None:
+        self.pos = pos
         self.data = data
+        self.api = api
+
         self.name = data['name']
         self.price = data['price']
         self.category = data['category']
         self.graphics = data['graphics']
         self.stats = data['stats']
-        self.pos = pos
 
         self.display_surface = pygame.display.get_surface()
 
@@ -222,7 +225,12 @@ class Card:
         self.size = self.background.get_size()
 
         # Image
-        self.graphics_image = pygame.image.load(self.graphics).convert_alpha()
+        if self.api.is_authenticate:
+            self.graphics_image = pygame.image.load(self.graphics).convert_alpha()
+        else:
+            self.graphics_image = pygame.Surface((40, 40))
+            self.graphics_image.fill('black')
+
         self.graphics_rect = self.graphics_image.get_rect(
             center=[pos[0] + 100, pos[1] + 60])
 
@@ -233,7 +241,7 @@ class Card:
         # Buy button
         self.buy_button = Button(
             "",
-            self.update_inventory_shop_data,
+            self.update_inventory_data,
             [pos[0] + (self.size[0] / 2) + 25, pos[1] +
              (self.size[1] - 30) - 3],
             40,
@@ -254,33 +262,36 @@ class Card:
         self.shop_data = read_json_file("data/api_shop.json")
         self.data_is_update = False
 
-        self.check_is_buy()
-
     def check_is_buy(self):
-        print("CHECK")
         player_inventory = read_json_file("data/player.json")['inventory']
-        
+
+        if not self.category in player_inventory:
+            player_inventory[self.category] = []
+
         for player_item in player_inventory[self.category]:
             if player_item['name'] == self.name:
                 self.is_buy = True
 
-    def update_inventory_shop_data(self):
+    def update_inventory_data(self):
         if not self.data_is_update:
             # Update inventory
             player_data = read_json_file("data/player.json")
-            
-            if not player_data['inventory'][self.category]:
+
+            if not self.category in player_data['inventory']:
                 player_data['inventory'][self.category] = []
 
             player_data['inventory'][self.category].append(self.data)
             write_json_file("data/player.json", player_data)
 
-            # Update shop (remove card)
-            # shop_data = read_json_file("data/api_shop.json")
-            # print(shop_data[self.category])
-            # shop_data[self.category].remove(self.data)
-            # write_json_file("data/api_shop.json", {})
-            # write_json_file("data/api_shop.json", shop_data)
+            # Update API
+            player = self.api.get_player()
+            item = self.api.get_item(self.name)
+            self.api.add_player_item({
+                'name': item['name'],
+                'price': item['price'],
+                'category': item['category'],
+                'player': player['url']
+            })
             
             self.is_buy = True
             self.data_is_update = True
@@ -300,7 +311,7 @@ class Card:
                 "left", f"{text} : {self.stats[stat]}", UI_FONT, UI_FONT_SIZE, "white", pos)
             self.stats_texts.append(stat_text)
     
-    def update_rect(self):
+    def update_components_rect(self):
         # Background
         self.background_rect = self.background.get_rect(topleft=self.pos)
 
@@ -318,7 +329,7 @@ class Card:
         # Buy button
         self.buy_button = Button(
             "",
-            self.update_inventory_shop_data,
+            self.update_inventory_data,
             [self.pos[0] + (self.size[0] / 2) + 25, self.pos[1] +
              (self.size[1] - 30) - 3],
             40,
@@ -333,7 +344,14 @@ class Card:
 
     def display(self):
         # Update
-        self.update_rect()
+        self.update_components_rect()
+
+        if self.api.is_authenticate:
+            self.check_is_buy()
+            self.graphics_image = pygame.image.load(self.graphics).convert_alpha()
+        else:
+            self.graphics_image = pygame.Surface((40, 40))
+            self.graphics_image.fill('black')
 
         # Draw
         self.display_surface.blit(self.background, self.background_rect)

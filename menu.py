@@ -163,12 +163,12 @@ class LoadingBar:
             if self.bar_width == current_width:
                 self.last_task_index = self.task_index
 
-            print("INDEX CHANGE ---------------")
-            print(self.last_task_index, '/', self.task_index, '/', len(self.tasks))
-            print("size :", self.fill_rect.width)
-            print("current :", current_width, current_ratio)
-            print("last :", last_width, last_ratio)
-            print("tasks :", self.tasks[self.task_index])
+            # print("INDEX CHANGE ---------------")
+            # print(self.last_task_index, '/', self.task_index, '/', len(self.tasks))
+            # print("size :", self.fill_rect.width)
+            # print("current :", current_width, current_ratio)
+            # print("last :", last_width, last_ratio)
+            # print("tasks :", self.tasks[self.task_index])
         
         if self.task_index == len(self.tasks) - 1:
             self.bar_width = 0
@@ -202,14 +202,18 @@ class Button:
         self.image = pygame.image.load(self.default_image).convert_alpha()
         self.size = self.image.get_size()
 
+        # Text
+        self.text_color = 'black'
+
     def check_hover_click(self):
         mouse_pos = pygame.mouse.get_pos()
 
         # Hover
         if self.rect.collidepoint(mouse_pos):
             self.image = pygame.image.load(self.hover_image).convert_alpha()
-
             self.display_surface.blit(self.image, self.rect)
+            
+            self.text_color = 'white'
 
             # Click
             if pygame.mouse.get_pressed()[0]:
@@ -222,6 +226,8 @@ class Button:
             self.image = pygame.image.load(self.default_image).convert_alpha()
             self.display_surface.blit(self.image, self.rect)
 
+            self.text_color = 'black'
+
     def display_text_or_image(self):
         if '/' in self.content or "\\" in self.content:
             # Image
@@ -231,7 +237,7 @@ class Button:
         else:
             # Text
             font = pygame.font.Font(UI_FONT, BUTTON_FONT_SIZE)
-            text_surf = font.render(self.content, False, "black")
+            text_surf = font.render(self.content, False, self.text_color)
             text_rect = text_surf.get_rect(center=self.rect.center)
             self.display_surface.blit(text_surf, text_rect)
 

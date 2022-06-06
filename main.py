@@ -89,6 +89,7 @@ class Game:
                                   ),
                          ],
                          "graphics/ui/background.png",
+                         self.api,
                          self.create_start_menu
                          ),
             'level': Level()
@@ -109,7 +110,6 @@ class Game:
     def login(self):
         username = self.scenes[self.status].components[1].value
         password = self.scenes[self.status].components[2].value
-        self.api.authenticate(username, password)
 
         try:
             self.api.authenticate(username, password)
@@ -123,13 +123,15 @@ class Game:
             self.status = 'loading_page'
 
         self.player_data = read_json_file("data/player.json")
-            
 
     def disconnect(self):
         write_json_file("data/player.json", {
             'username': "",
             'token': "",
+            'coins': 0,
+            'inventory': {}
         })
+        self.api.authenticate = False
         self.status = 'login_menu'
 
     def quit(self):
