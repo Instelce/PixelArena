@@ -23,7 +23,7 @@ class Game:
         # Scenes
         if self.api.is_authenticate:
             self.api.download_data()
-            self.create_loading_page()
+            self.create_start_menu()
         else:
             self.status = 'login_menu'
         self.old_status = self.status

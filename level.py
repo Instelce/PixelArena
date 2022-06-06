@@ -4,7 +4,8 @@ import math
 from settings import *
 from player import Player
 from debug import debug
-from tile import Tile, Object
+from spawner import Spawner, Wave
+from tile import Relic, Tile, Object
 from support import *
 from mouse import Mouse
 from enemy import Enemy
@@ -23,6 +24,11 @@ class Level:
         self.enemies_sprite = pygame.sprite.Group()
 
         self.mouse = Mouse()
+
+        # Spawner and wave
+        self.spawners_sprite = pygame.sprite.Group()
+        self.wave_difficulty = 1
+        self.current_wave = Wave(self.wave_difficulty, self.spawners_sprite)
 
         # Build
         self.in_build_mode = False
@@ -83,8 +89,9 @@ class Level:
                             Tile("wall", (x, y), [self.visible_sprites,
                                                   self.obstacle_sprites], surf)
                         if style == 'objects':
-                            surf = graphics['objects'][0]
-                            Object((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
+                            if col == '1':
+                                surf = graphics['objects'][0]
+                                self.relic = Relic((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
                         if style == 'entities':
                             if col == '0':
                                 self.player = Player((x, y),
@@ -95,13 +102,8 @@ class Level:
                                                      self.create_magic)
                             else:
                                 if col == '4':
-                                    enemy_name = 'slimevampire'
-                                Enemy(enemy_name,
-                                      (x, y),
-                                      [self.visible_sprites,
-                                       self.attackable_sprites],
-                                      self.obstacle_sprites,
-                                      self.damage_player)
+                                    Spawner((x, y),
+                                        [self.spawners_sprite, self.visible_sprites])
                         # if style == 'grass':
                         #     surf = graphics['grass'][int(col)]
                         #     Tile("grass", (x, y), [self.visible_sprites], surf)
@@ -195,9 +197,21 @@ class Level:
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
 
+    def wave_management(self):
+        if self.current_wave.is_finish:
+            self.wave_difficulty += 1
+
+            del self.current_wave
+            self.current_wave = Wave(self.wave_difficulty, self.spawners_sprite)
+
+        self.current_wave.start()
+        self.current_wave.check_spawn([self.visible_sprites, self.enemies_sprite, self.attackable_sprites], self.obstacle_sprites, self.damage_player)
+
+
     def display(self):
         # Update and draw the game
         self.input()
+        self.wave_management()
 
         if self.in_build_mode:
             self.create_build_grid()
@@ -205,9 +219,11 @@ class Level:
 
         self.visible_sprites.set_target(self.player)
         self.visible_sprites.update()
-        self.visible_sprites.enemy_update(self.player)
+        self.visible_sprites.enemy_update(self.player, self.relic)
+
         self.player_attack_logic()
-        self.ui.display(self.player)
+
+        self.ui.display(self.player, self.current_wave)
         self.mouse.update()
 
         # Debug
@@ -218,6 +234,7 @@ class Level:
         debug(f"in_build_mode : {self.in_build_mode}", 60)
         debug(f"player.direction : {self.player.direction}", 70)
         debug(f"player.status : {self.player.status}", 80)
+        debug(f"len(self.enemies_sprite) : {len(self.enemies_sprite)}", 80)
 
 
 class YSortCameraGroup(pygame.sprite.Group):
@@ -259,8 +276,8 @@ class YSortCameraGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
 
-    def enemy_update(self, player):
+    def enemy_update(self, player, relic):
         enemy_sprites = [sprite for sprite in self.sprites() if hasattr(
             sprite, 'sprite_type') and sprite.sprite_type == 'enemy']
         for enemy in enemy_sprites:
-            enemy.enemy_update(player)
+            enemy.enemy_update(player, relic)

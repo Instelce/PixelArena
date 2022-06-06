@@ -14,6 +14,8 @@ class UI:
             10, 10, HEALTH_BAR_WIDTH, BAR_HEIGHT)
         self.energy_bar_rect = pygame.Rect(
             10, 34, ENERGY_BAR_WIDTH, BAR_HEIGHT)
+        self.wave_duration_bar_rect = pygame.Rect(
+            SCREEN_WIDTH-(WAVE_DURATION_BAR_WIDTH+10), 10, WAVE_DURATION_BAR_WIDTH, BAR_HEIGHT)
 
         # Convert weapon dictionary
         self.weapon_graphics = []
@@ -27,7 +29,7 @@ class UI:
             magic = pygame.image.load(magic['graphic']).convert_alpha()
             self.magic_graphics.append(magic)
 
-    def show_bar(self, current, max_amount, bg_rect, color):
+    def show_bar(self, current, max_amount, bg_rect, color, separator_gap=None):
         # Draw background
         pygame.draw.rect(self.display_surface, UI_BG_COLOR, bg_rect)
 
@@ -37,9 +39,22 @@ class UI:
         current_rect = bg_rect.copy()
         current_rect.width = current_width
 
+        # Create separators
+        separators = []
+        if separator_gap != None:
+            for i in range(0, max_amount, separator_gap):
+                print(i, max_amount)
+                separator = pygame.Rect(i, bg_rect.top, 4, bg_rect.height)
+                separators.append(separator)
+                
         # Drawing the bar
         pygame.draw.rect(self.display_surface, color, current_rect)
         pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, bg_rect, 3)
+
+        # Drawing separators
+        for separator in separators:
+            print(separator)
+            pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, separator)
 
     def show_exp(self, exp):
         text_surf = self.font.render(str(int(exp)), False, TEXT_COLOR)
@@ -52,6 +67,14 @@ class UI:
         self.display_surface.blit(text_surf, text_rect)
         pygame.draw.rect(self.display_surface, UI_BORDER_COLOR,
                          text_rect.inflate(20, 16), 3)
+    
+    def show_wave_difficulty(self, difficulty):
+        text_surf = self.font.render(f"Wave {str(int(difficulty))}", False, TEXT_COLOR)
+        x = self.display_surface.get_size()[0] - 10
+        y = 34
+        text_rect = text_surf.get_rect(topright=(x, y))
+
+        self.display_surface.blit(text_surf, text_rect)
 
     def selection_box(self, left, top, has_switched):
         bg_rect = pygame.Rect(left, top, ITEM_BOX_SIZE, ITEM_BOX_SIZE)
@@ -84,12 +107,25 @@ class UI:
     def inventory_overlay(self):
         pass
 
-    def display(self, player):
+    def display(self, player, wave):
         self.show_bar(
-            player.health, player.stats['health'], self.health_bar_rect, HEALTH_COLOR)
+            player.health, 
+            player.stats['health'], 
+            self.health_bar_rect, 
+            HEALTH_COLOR)
         self.show_bar(
-            player.energy, player.stats['energy'], self.energy_bar_rect, ENERGY_COLOR)
+            player.energy, 
+            player.stats['energy'], 
+            self.energy_bar_rect, 
+            ENERGY_COLOR)
+        self.show_bar(
+            wave.current_time,
+            wave.duration,
+            self.wave_duration_bar_rect, 
+            WAVE_DURATION_COLOR,
+            wave.spawn_cooldown)
 
         self.show_exp(player.exp)
+        self.show_wave_difficulty(wave.difficulty)
         self.weapon_overlay(player.weapon_index, not player.can_switch_weapon)
         self.magic_overlay(player.magic_index, not player.can_switch_magic)

@@ -17,5 +17,10 @@ class Object(pygame.sprite.Sprite):
         self.display_surface = pygame.display.get_surface()
         self.image = surface
         self.rect = self.image.get_rect(center=pos)
-        self.hitbox = pygame.Rect(pos[0] + surface.get_size()[0] / 2, pos[1] +
-                                  surface.get_size()[1] / 2, surface.get_size()[0], surface.get_size()[1])
+        self.hitbox = self.rect.inflate(0, 0)
+
+
+class Relic(Object):
+    def __init__(self, pos, groups, surface) -> None:
+        super().__init__(pos, groups, surface)
+        self.health = 100

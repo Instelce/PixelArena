@@ -51,43 +51,45 @@ class Enemy(Entity):
         for animation in self.animations.keys():
             self.animations[animation] = import_folder(main_path + animation)
 
-    def get_player_distance_direction(self, player):
+    def get_object_or_entity_distance_direction(self, object_or_entity):
         enemy_vec = pygame.math.Vector2(self.rect.center)
-        player_vec = pygame.math.Vector2(player.rect.center)
+        object_or_entity_vec = pygame.math.Vector2(object_or_entity.rect.center)
 
-        distance = (player_vec - enemy_vec).magnitude()
+        distance = (object_or_entity_vec - enemy_vec).magnitude()
 
         if distance > 0:
-            direction = (player_vec - enemy_vec).normalize()
+            direction = (object_or_entity_vec - enemy_vec).normalize()
         else:
             direction = pygame.math.Vector2()
 
         return (distance, direction)
 
     def get_status(self, player):
-        distance = self.get_player_distance_direction(player)[0]
+        player_distance = self.get_object_or_entity_distance_direction(player)[0]
 
-        if distance <= self.attack_radius and self.can_attack:
+        if player_distance <= self.attack_radius and self.can_attack:
             # if self.status != 'attack':
             #     self.frame_index = 0
             self.status = 'attack'
             self.can_attack = False
-        elif distance <= self.notice_radius:
-            self.status = 'move'
+        elif player_distance <= self.notice_radius:
+            self.status = 'move_to_player'
         else:
-            self.status = 'idle'
+            self.status = 'move_to_relic'
 
-    def actions(self, player):
+    def actions(self, player, relic):
         if self.status == 'attack':
             self.attack_time = pygame.time.get_ticks()
             self.damage_player(self.attack_damage, self.attack_type)
-        elif self.status == 'move':
-            self.direction = self.get_player_distance_direction(player)[1]
+        elif self.status == 'move_to_player':
+            self.direction = self.get_object_or_entity_distance_direction(player)[1]
+        elif self.status == 'move_to_relic':
+            self.direction = self.get_object_or_entity_distance_direction(relic)[1]
         else:
             self.direction = pygame.math.Vector2()
 
     def animate(self):
-        animation = self.animations[self.status]
+        animation = self.animations[self.status.split('_')[0]]
 
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
@@ -115,13 +117,12 @@ class Enemy(Entity):
 
     def get_damage(self, player, attack_type):
         if self.vulnerable:
-            self.direction = self.get_player_distance_direction(player)[1]
+            self.direction = self.get_object_or_entity_distance_direction(player)[1]
 
             if attack_type == 'weapon':
                 self.health -= player.get_full_weapon_damage()
             else:
-                # Magic damage
-                pass
+                pass # Magic damage
 
             self.hit_time = pygame.time.get_ticks()
             self.vulnerable = False
@@ -141,6 +142,6 @@ class Enemy(Entity):
         self.cooldowns()
         self.check_death()
 
-    def enemy_update(self, player):
+    def enemy_update(self, player, relic):
         self.get_status(player)
-        self.actions(player)
+        self.actions(player, relic)
