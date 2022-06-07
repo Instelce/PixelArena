@@ -53,14 +53,12 @@ class Wave:
             self.cooldown += self.spawn_cooldown
             
             now = pygame.time.get_ticks()
-            if now - self.last_time >= 100:
+            if now - self.last_time >= 10:
                 self.last_time = now
                 for spawner in self.spawners_sprite:
                     spawner.enemy_spawn(choice(self.enemy_list), spawner.pos, enemy_groups, obstacle_sprites, damage_player)
             
             self.enemies_spawn_counter += 1
-
-            pygame.time.delay(500)
 
     def start(self):
         now = pygame.time.get_ticks()

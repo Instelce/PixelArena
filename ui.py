@@ -41,10 +41,17 @@ class UI:
 
         # Create separators
         separators = []
+        sep_count = 0
         if separator_gap != None:
             for i in range(0, max_amount, separator_gap):
-                print(i, max_amount)
-                separator = pygame.Rect(i, bg_rect.top, 4, bg_rect.height)
+                ratio = (sep_count * separator_gap) / max_amount
+                pos = bg_rect.width * ratio
+                sep_count += 1
+                print('Ratio', ratio)
+                print('Count', sep_count)
+                print('Pos', pos)
+
+                separator = pygame.Rect(bg_rect.left + pos, bg_rect.top, 2, bg_rect.height)
                 separators.append(separator)
                 
         # Drawing the bar
@@ -53,7 +60,6 @@ class UI:
 
         # Drawing separators
         for separator in separators:
-            print(separator)
             pygame.draw.rect(self.display_surface, UI_BORDER_COLOR, separator)
 
     def show_exp(self, exp):
