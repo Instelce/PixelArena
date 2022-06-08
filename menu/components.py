@@ -261,3 +261,63 @@ class Input:
         if self.focus and self.value != '':
             self.cursor = pygame.Rect(input_center[0] + text_input_size[0], input_center[1], 1, self.font_size)
             pygame.draw.rect(self.display_surface, self.color, self.cursor, 2)
+
+
+class CheckBox:
+    def __init__(self, label="Checkbox", is_check=False, trigger_func=None, pos=None, margin=None) -> None:
+        self.display_surface = pygame.display.get_surface()
+        self.pos = (SCREEN_WIDTH/2, 0) if pos is None else pos
+        self.margin = 80 if margin is None else margin
+        self.last_time = pygame.time.get_ticks()
+
+        self.label = label
+        self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        self.label_color = 'black'
+        self.label_text_surf = self.font.render(self.label, True, self.label_color)
+
+        self.default_image = r"graphics\ui\checkbox\default.png"
+        self.hover_image = r"graphics\ui\checkbox\hover.png"
+        self.box = pygame.image.load(self.default_image).convert_alpha()
+        self.box_fill = pygame.image.load(r"graphics\ui\checkbox\fill.png").convert_alpha()
+        self.size = self.box.get_size()
+
+        self.is_check = is_check
+        self.trigger_func = trigger_func
+
+    def check_hover_click(self):
+        mouse_pos = pygame.mouse.get_pos()
+        current_time = pygame.time.get_ticks()
+
+        # Hover
+        if self.label_text_rect.collidepoint(mouse_pos) or self.box_rect.collidepoint(mouse_pos):
+            self.box = pygame.image.load(self.hover_image).convert_alpha()
+            self.display_surface.blit(self.box, self.box_rect)
+            
+            self.label_color = 'white'
+
+            # Click
+            if pygame.mouse.get_pressed()[0] and current_time - self.last_time >= 200:
+                self.last_time = current_time
+
+                self.is_check = True if self.is_check is False else False
+
+                if self.trigger_func != None:
+                    self.trigger_func()
+        else:
+            self.box = pygame.image.load(self.default_image).convert_alpha()
+            self.display_surface.blit(self.box, self.box_rect)
+
+            self.label_color = 'black'
+
+    def display(self):
+        self.label_text_surf = self.font.render(self.label, True, self.label_color)
+        self.label_text_rect = self.label_text_surf.get_rect(midright=(self.pos[0] - 20, self.pos[1]))
+        self.box_rect = self.box.get_rect(midleft=(self.pos[0] + 20, self.pos[1]))
+
+        self.check_hover_click()
+
+        self.display_surface.blit(self.box, self.box_rect)
+        self.display_surface.blit(self.label_text_surf, self.label_text_rect)
+
+        if self.is_check:
+            self.display_surface.blit(self.box_fill, (self.box_rect.x + 5, self.box_rect.y + 5))

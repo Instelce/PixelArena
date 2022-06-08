@@ -103,6 +103,7 @@ class Game:
                                         TITLE_FONT_SIZE,
                                         "white",
                                         (SCREEN_WIDTH / 2, 100)),
+                                        CheckBox(),
                                    Button("Back", self.create_start_menu, None),
                                ],
                                "graphics/ui/background.png"),
