@@ -3,8 +3,10 @@ import sys
 
 from settings import *
 from level import Level
-from menu import *
-from shop import Shop
+from menu.default import Menu
+from menu.shop import Shop
+from menu.transition import SceneTransition
+from menu.components import *
 from debug import debug
 from api import Api
 from support import read_json_file, write_json_file
@@ -73,9 +75,10 @@ class Game:
                                         (SCREEN_WIDTH / 2, 100)),
                                    Button("Start", self.create_level),
                                    Button("Shop", self.create_shop),
-                                   Button("Settings", None),
-                                   Button("Disconnect", self.disconnect, None),
-                                   Button("Quit", self.quit, None),
+                                   Button("Settings", self.create_settings_menu),
+                                   Button("Credits", None),
+                                   Button("Disconnect", self.disconnect),
+                                   Button("Quit", self.quit),
                                ],
                                "graphics/ui/background.png"),
             'shop': Shop('shop',
@@ -92,8 +95,22 @@ class Game:
                          self.api,
                          self.create_start_menu
                          ),
+            'settings_menu': Menu('simple_menu',
+                               [
+                                   Text("center",
+                                        "Settings",
+                                        UI_FONT,
+                                        TITLE_FONT_SIZE,
+                                        "white",
+                                        (SCREEN_WIDTH / 2, 100)),
+                                   Button("Back", self.create_start_menu, None),
+                               ],
+                               "graphics/ui/background.png"),
             'level': Level()
         }
+
+    def create_last_scene(self):
+        self.status = None
 
     def create_start_menu(self):
         self.status = 'start_menu'
@@ -103,6 +120,9 @@ class Game:
 
     def create_shop(self):
         self.status = 'shop'
+    
+    def create_settings_menu(self):
+        self.status = 'settings_menu'
 
     def create_level(self):
         self.status = 'level'

@@ -6,39 +6,68 @@
             "category": "weapons",
             "graphics": "api_graphics/weapons/sword/full.png",
             "stats": {
-                "damage": 10,
+                "damage": 5,
                 "cooldown": 100
             }
         },
         {
-            "name": "sword",
-            "price": 10,
+            "name": "axe",
+            "price": 40,
             "category": "weapons",
-            "graphics": "api_graphics/weapons/sword/full.png",
+            "graphics": "api_graphics/weapons/axe/full.png",
             "stats": {
-                "damage": 10,
-                "cooldown": 100
+                "damage": 5,
+                "cooldown": 200
             }
         },
         {
             "name": "sai",
-            "price": 20,
+            "price": 50,
             "category": "weapons",
             "graphics": "api_graphics/weapons/sai/full.png",
             "stats": {
-                "damage": 15,
+                "damage": 10,
                 "cooldown": 120
+            }
+        },
+        {
+            "name": "katana",
+            "price": 100,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/katana/full.png",
+            "stats": {
+                "damage": 1000,
+                "cooldown": 5
+            }
+        },
+        {
+            "name": "caca",
+            "price": 10000,
+            "category": "weapons",
+            "graphics": "api_graphics/weapons/caca/full.png",
+            "stats": {
+                "damage": 0,
+                "cooldown": 100
             }
         }
     ],
     "potions": [
         {
             "name": "health_potion",
-            "price": 5,
+            "price": 10,
             "category": "potions",
             "graphics": "api_graphics/potions/health_potion/full.png",
             "stats": {
-                "health_regen": 20
+                "health_regen": 5
+            }
+        },
+        {
+            "name": "mana_potion",
+            "price": 5,
+            "category": "potions",
+            "graphics": "api_graphics/potions/mana_potion/full.png",
+            "stats": {
+                "mana_regen": 20
             }
         }
     ]

@@ -16,6 +16,8 @@ class UI:
             10, 34, ENERGY_BAR_WIDTH, BAR_HEIGHT)
         self.wave_duration_bar_rect = pygame.Rect(
             SCREEN_WIDTH-(WAVE_DURATION_BAR_WIDTH+10), 10, WAVE_DURATION_BAR_WIDTH, BAR_HEIGHT)
+        self.relic_health_bar_rect = pygame.Rect(
+            SCREEN_WIDTH/2-(RELIC_HEALTH_BAR_WIDTH/2), SCREEN_HEIGHT-BAR_HEIGHT-20, RELIC_HEALTH_BAR_WIDTH, BAR_HEIGHT)
 
         # Convert weapon dictionary
         self.weapon_graphics = []
@@ -47,9 +49,9 @@ class UI:
                 ratio = (sep_count * separator_gap) / max_amount
                 pos = bg_rect.width * ratio
                 sep_count += 1
-                print('Ratio', ratio)
-                print('Count', sep_count)
-                print('Pos', pos)
+                # print('Ratio', ratio)
+                # print('Count', sep_count)
+                # print('Pos', pos)
 
                 separator = pygame.Rect(bg_rect.left + pos, bg_rect.top, 2, bg_rect.height)
                 separators.append(separator)
@@ -74,8 +76,8 @@ class UI:
         pygame.draw.rect(self.display_surface, UI_BORDER_COLOR,
                          text_rect.inflate(20, 16), 3)
     
-    def show_wave_difficulty(self, difficulty):
-        text_surf = self.font.render(f"Wave {str(int(difficulty))}", False, TEXT_COLOR)
+    def show_wave_info(self, wave):
+        text_surf = self.font.render(f"{str(int(wave.enemies_number))} enemy by wave | Wave {str(int(wave.difficulty))}", False, TEXT_COLOR)
         x = self.display_surface.get_size()[0] - 10
         y = 34
         text_rect = text_surf.get_rect(topright=(x, y))
@@ -113,7 +115,7 @@ class UI:
     def inventory_overlay(self):
         pass
 
-    def display(self, player, wave):
+    def display(self, player, wave, relic):
         self.show_bar(
             player.health, 
             player.stats['health'], 
@@ -130,8 +132,13 @@ class UI:
             self.wave_duration_bar_rect, 
             WAVE_DURATION_COLOR,
             wave.spawn_cooldown)
+        self.show_bar(
+            relic.health,
+            relic.stats['health'],
+            self.relic_health_bar_rect, 
+            HEALTH_COLOR)
 
         self.show_exp(player.exp)
-        self.show_wave_difficulty(wave.difficulty)
+        self.show_wave_info(wave)
         self.weapon_overlay(player.weapon_index, not player.can_switch_weapon)
         self.magic_overlay(player.magic_index, not player.can_switch_magic)

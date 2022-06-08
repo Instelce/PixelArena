@@ -7,7 +7,7 @@ from support import *
 
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, pos, groups, obstacle_sprites, damage_player) -> None:
+    def __init__(self, enemy_name, pos, groups, obstacle_sprites, damage_player, damage_relic) -> None:
         super().__init__(groups)
         self.sprite_type = 'enemy'
 
@@ -38,6 +38,7 @@ class Enemy(Entity):
         self.attack_time = None
         self.attack_cooldown = 400
         self.damage_player = damage_player
+        self.damage_relic = damage_relic
 
         # Invincibility timer
         self.vulnerable = True
@@ -64,13 +65,17 @@ class Enemy(Entity):
 
         return (distance, direction)
 
-    def get_status(self, player):
+    def get_status(self, player, relic):
         player_distance = self.get_object_or_entity_distance_direction(player)[0]
+        relic_distance = self.get_object_or_entity_distance_direction(relic)[0]
 
         if player_distance <= self.attack_radius and self.can_attack:
             # if self.status != 'attack':
             #     self.frame_index = 0
-            self.status = 'attack'
+            self.status = 'attack_player'
+            self.can_attack = False
+        elif relic_distance <= self.attack_radius and self.can_attack:
+            self.status = 'attack_relic'
             self.can_attack = False
         elif player_distance <= self.notice_radius:
             self.status = 'move_to_player'
@@ -78,9 +83,12 @@ class Enemy(Entity):
             self.status = 'move_to_relic'
 
     def actions(self, player, relic):
-        if self.status == 'attack':
+        if self.status == 'attack_player':
             self.attack_time = pygame.time.get_ticks()
             self.damage_player(self.attack_damage, self.attack_type)
+        elif self.status == 'attack_relic':
+            self.attack_time = pygame.time.get_ticks()
+            self.damage_relic(self.attack_damage, self.attack_type)
         elif self.status == 'move_to_player':
             self.direction = self.get_object_or_entity_distance_direction(player)[1]
         elif self.status == 'move_to_relic':
@@ -143,5 +151,5 @@ class Enemy(Entity):
         self.check_death()
 
     def enemy_update(self, player, relic):
-        self.get_status(player)
+        self.get_status(player, relic)
         self.actions(player, relic)

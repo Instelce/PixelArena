@@ -4,7 +4,7 @@ import math
 from settings import *
 from player import Player
 from debug import debug
-from spawner import Spawner, Wave
+from wave import Spawner, Wave
 from tile import Relic, Tile, Object
 from support import *
 from mouse import Mouse
@@ -91,7 +91,7 @@ class Level:
                         if style == 'objects':
                             if col == '1':
                                 surf = graphics['objects'][0]
-                                self.relic = Relic((x, y), [self.visible_sprites, self.obstacle_sprites], surf)
+                                self.relic = Relic((x, y), [self.visible_sprites, self.obstacle_sprites], surf, self.enemies_sprite)
                         if style == 'entities':
                             if col == '0':
                                 self.player = Player((x, y),
@@ -196,6 +196,12 @@ class Level:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+    
+    def damage_relic(self, amount, attack_type):
+        if self.relic.vulnerable:
+            self.relic.health -= amount
+            self.relic.vulnerable = False
+            self.relic.hurt_time = pygame.time.get_ticks()
 
     def wave_management(self):
         if self.current_wave.is_finish:
@@ -205,7 +211,7 @@ class Level:
             self.current_wave = Wave(self.wave_difficulty, self.spawners_sprite)
 
         self.current_wave.start()
-        self.current_wave.check_spawn([self.visible_sprites, self.enemies_sprite, self.attackable_sprites], self.obstacle_sprites, self.damage_player)
+        self.current_wave.check_spawn([self.visible_sprites, self.enemies_sprite, self.attackable_sprites], self.obstacle_sprites, self.damage_player, self.damage_relic)
 
 
     def display(self):
@@ -223,7 +229,7 @@ class Level:
 
         self.player_attack_logic()
 
-        self.ui.display(self.player, self.current_wave)
+        self.ui.display(self.player, self.current_wave, self.relic)
         self.mouse.update()
 
         # Debug

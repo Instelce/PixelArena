@@ -6,20 +6,6 @@ from enemy import Enemy
 from settings import TILE_SIZE
 
 
-class Spawner(pygame.sprite.Sprite):
-    def __init__(self, pos, groups) -> None:
-        super().__init__(groups)
-        self.pos = pos
-        self.display_surface = pygame.display.get_surface()
-
-        self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
-        self.rect = self.image.get_rect(topleft=pos)
-        self.image.fill('orange')
-
-    def enemy_spawn(self, enemy_name, pos, groups, obstacle_sprites, damage_player):
-        Enemy(enemy_name, pos, groups, obstacle_sprites, damage_player)
-
-
 class Wave:
     def __init__(self, start_difficulty, spawners_sprite) -> None:
         self.difficulty = start_difficulty
@@ -48,7 +34,7 @@ class Wave:
         self.spawn_cooldown = floor(self.duration / self.enemies_number)
         self.cooldown = self.spawn_cooldown
 
-    def check_spawn(self, enemy_groups, obstacle_sprites, damage_player):
+    def check_spawn(self, enemy_groups, obstacle_sprites, damage_player, damage_relic):
         if self.current_time >= self.cooldown and self.enemies_spawn_counter <= self.enemies_number:
             self.cooldown += self.spawn_cooldown
             
@@ -56,7 +42,7 @@ class Wave:
             if now - self.last_time >= 10:
                 self.last_time = now
                 for spawner in self.spawners_sprite:
-                    spawner.enemy_spawn(choice(self.enemy_list), spawner.pos, enemy_groups, obstacle_sprites, damage_player)
+                    spawner.enemy_spawn(choice(self.enemy_list), spawner.pos, enemy_groups, obstacle_sprites, damage_player, damage_relic)
             
             self.enemies_spawn_counter += 1
 
@@ -69,10 +55,26 @@ class Wave:
         if self.current_time >= self.duration:
             self.is_finish = True
 
-        print('Timer', self.current_time, '/', self.duration)
-        print('Cooldown', self.spawn_cooldown, '/', self.cooldown)
-        print('Enemies number', self.enemies_number)
-        print('Counter', self.enemies_spawn_counter)
-        print('Difficulty', self.difficulty, '|')
-        print()
+        # print('Timer', self.current_time, '/', self.duration)
+        # print('Cooldown', self.spawn_cooldown, '/', self.cooldown)
+        # print('Enemies number', self.enemies_number)
+        # print('Counter', self.enemies_spawn_counter)
+        # print('Difficulty', self.difficulty, '|')
+        # print()
+
+
+class Spawner(pygame.sprite.Sprite):
+    def __init__(self, pos, groups) -> None:
+        super().__init__(groups)
+        self.pos = pos
+        self.display_surface = pygame.display.get_surface()
+
+        self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.image.fill('orange')
+
+    def enemy_spawn(self, enemy_name, pos, groups, obstacle_sprites, damage_player, damage_relic):
+        Enemy(enemy_name, pos, groups, obstacle_sprites, damage_player, damage_relic)
+
+
 
